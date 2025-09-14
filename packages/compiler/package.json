@@ -1,0 +1,55 @@
+{
+  "name": "@velvet/compiler",
+  "version": "0.1.0",
+  "description": "Your favourite framework needs to compile it's favourite code!",
+  "author": "dsnyland",
+  "license": "MIT",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/mjs/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    "require": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/cjs/index.js"
+    },
+    "import": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/mjs/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "velvet",
+    "compiler",
+    "framework",
+    "static-site",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dsnyland/velvet.git",
+    "directory": "packages/compiler"
+  },
+  "bugs": {
+    "url": "https://github.com/dsnyland/velvet/issues"
+  },
+  "homepage": "https://github.com/dsnyland/velvet#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build:cjs": "tsc --project ../../cfg/compiler/tsconfig.cjs.json",
+    "build:mjs": "tsc --project ../../cfg/compiler/tsconfig.mjs.json",
+    "build": "pnpm run build:cjs && pnpm run build:mjs",
+    "dev": "tsc -w --project ../../cfg/compiler/tsconfig.mjs.json",
+    "test": "node ../../tests/compiler/*.test.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@velvet/utils": "workspace:*"
+  }
+}
