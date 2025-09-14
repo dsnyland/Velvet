@@ -47,6 +47,11 @@ coverage/
 # REPL history
 .node_repl_history
 
+# Lockfiles
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
 # Yarn PnP
 .pnp.*
 .yarn/*
