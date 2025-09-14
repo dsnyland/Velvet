@@ -1,0 +1,33 @@
+{
+  "name": "@velvet/utils",
+  "version": "0.1.0",
+  "description": "Your favourite framework needs it's favourite utilities!",
+  "author": "dsnyland",
+  "license": "MIT",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/mjs/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    "require": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/cjs/index.js"
+    },
+    "import": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/mjs/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:cjs": "tsc --project cfg/tsconfig.cjs.json",
+    "build:mjs": "tsc --project cfg/tsconfig.mjs.json",
+    "build": "pnpm run build:cjs && pnpm run build:mjs",
+    "dev": "tsc -w --project cfg/tsconfig.mjs.json",
+    "test": "node tests/*/*.test.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
