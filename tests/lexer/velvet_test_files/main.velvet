@@ -1,0 +1,17 @@
+<Component> 
+		--- 
+		let counter = 0; 
+		--- 
+		<div onclick={counter++}> 
+			{counter} 
+		</div> 
+</Component>
+<Component2> 
+		--- 
+		let counter = 0; 
+		--- 
+		<input title="Hello WOrld" />
+		<div onclick={counter++}> 
+			{counter} 
+		</div> 
+</Component2>

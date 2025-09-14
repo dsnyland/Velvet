@@ -1,3 +1,5 @@
+/*
+
 import { log } from "../../../utils/logging/logs";
 import { LogType } from "../../../utils/logging/types";
 import { compileVelvetFile } from "./type/velvet";
@@ -14,3 +16,5 @@ export const compileFile = (type: CompilerFileType) => {
       );
   }
 };
+
+*/
