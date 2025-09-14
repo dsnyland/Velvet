@@ -1,37 +1,37 @@
 {
-  "name": "velvet",
-  "version": "0.1.0",
-  "description": "Your new favourite web framework",
-  "author": "DSNYLAND",
-  "license": "MIT",
-  "keywords": [
-    "web",
-    "framework",
-    "typescript",
-    "nodejs"
-  ],
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs",
-      "types": "./dist/types/index.d.ts"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build:cjs": "tsc --project cfg/tsconfig.cjs.json && mv dist/index.js dist/index.cjs",
-    "build:mjs": "tsc --project cfg/tsconfig.mjs.json && mv dist/index.js dist/index.mjs",
-    "build": "pnpm run build:cjs && pnpm run build:mjs",
-    "dev": "tsc -w --project cfg/tsconfig.mjs.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "devDependencies": {
-    "typescript": "^5.6.3"
-  },
-  "packageManager": "pnpm@10.15.0"
+	"name": "velvet",
+	"version": "0.1.0",
+	"description": "Your new favourite web framework",
+	"author": "DSNYLAND",
+	"license": "MIT",
+	"keywords": [
+		"web",
+		"framework",
+		"typescript",
+		"nodejs"
+	],
+	"main": "dist/index.cjs",
+	"module": "dist/index.mjs",
+	"types": "dist/types/index.d.ts",
+	"exports": {
+		".": {
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs",
+			"types": "./dist/types/index.d.ts"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build:cjs": "tsc --project cfg/tsconfig.cjs.json && mv dist/index.js dist/index.cjs",
+		"build:mjs": "tsc --project cfg/tsconfig.mjs.json && mv dist/index.js dist/index.mjs",
+		"build": "pnpm run build:cjs && pnpm run build:mjs",
+		"dev": "tsc -w --project cfg/tsconfig.mjs.json",
+		"test": "node tests/*/*.test.js"
+	},
+	"devDependencies": {
+		"typescript": "^5.6.3"
+	},
+	"packageManager": "pnpm@10.15.0"
 }
