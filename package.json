@@ -10,27 +10,31 @@
 		"typescript",
 		"nodejs"
 	],
-	"main": "dist/index.cjs",
-	"module": "dist/index.mjs",
-	"types": "dist/types/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/mjs/index.js",
+	"types": "./dist/types/index.d.ts",
 	"exports": {
-		".": {
-			"require": "./dist/index.cjs",
-			"import": "./dist/index.mjs",
-			"types": "./dist/types/index.d.ts"
+		"require": {
+			"types": "./dist/types/index.d.ts",
+			"default": "./dist/cjs/index.js"
+		},
+		"import": {
+			"types": "./dist/types/index.d.ts",
+			"default": "./dist/mjs/index.js"
 		}
 	},
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"build:cjs": "tsc --project cfg/tsconfig.cjs.json && mv dist/index.js dist/index.cjs",
-		"build:mjs": "tsc --project cfg/tsconfig.mjs.json && mv dist/index.js dist/index.mjs",
+		"build:cjs": "tsc --project cfg/tsconfig.cjs.json",
+		"build:mjs": "tsc --project cfg/tsconfig.mjs.json",
 		"build": "pnpm run build:cjs && pnpm run build:mjs",
 		"dev": "tsc -w --project cfg/tsconfig.mjs.json",
 		"test": "node tests/*/*.test.js"
 	},
 	"devDependencies": {
+		"@types/node": "^24.4.0",
 		"typescript": "^5.6.3"
 	},
 	"packageManager": "pnpm@10.15.0"

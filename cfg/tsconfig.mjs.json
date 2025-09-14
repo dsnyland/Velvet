@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "../dist/mjs",
+    "declarationDir": "../dist/types"
   }
 }
