@@ -8,6 +8,11 @@
   "module": "./dist/mjs/index.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
     "require": {
       "types": "./dist/types/index.d.ts",
       "default": "./dist/cjs/index.js"
@@ -40,11 +45,11 @@
     "node": ">=18"
   },
   "scripts": {
-    "build:cjs": "tsc --project ../../cfg/compiler/tsconfig.cjs.json",
-    "build:mjs": "tsc --project ../../cfg/compiler/tsconfig.mjs.json",
+    "build:cjs": "tsc --project cfg/tsconfig.cjs.json",
+    "build:mjs": "tsc --project cfg/tsconfig.mjs.json",
     "build": "pnpm run build:cjs && pnpm run build:mjs",
-    "dev": "tsc -w --project ../../cfg/compiler/tsconfig.mjs.json",
-    "test": "node ../../tests/compiler/*.test.js"
+    "dev": "tsc -w --project cfg/tsconfig.mjs.json",
+    "test": "node tests/*.test.js"
   },
   "devDependencies": {
     "typescript": "^5.6.3"
