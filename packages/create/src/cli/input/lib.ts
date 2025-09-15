@@ -1,23 +1,87 @@
 import readline from "readline";
-import { QuestionType } from "./types";
+import { QuestionProps, QuestionType } from "./types";
+import { log, LogType } from "@velvet/utils";
 
-export const ask = (question: string, type: QuestionType) => {
+export const ask = (
+  question: string,
+  type: QuestionType,
+  ...args: unknown[]
+) => {
   const cli = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
-  return new Promise((resolve) => questions[type](cli, question, resolve));
+  return new Promise((resolve) =>
+    questions[type]({ cli, resolve, question, args }),
+  );
 };
 
 const questions = {
-  [QuestionType.TEXT]: (
-    cli: readline.Interface,
-    question: string,
-    resolve: (value: unknown) => void,
-  ) =>
+  [QuestionType.TEXT]: ({ cli, question, resolve }: QuestionProps) =>
     cli.question(question, (reply) => {
       cli.close();
       resolve(reply.trim());
     }),
+  [QuestionType.RADIO]: ({
+    cli,
+    question,
+    args = [[]],
+    resolve,
+  }: QuestionProps) => {
+    let selected = 0;
+    const options: string[] = args[0] as never;
+
+    if (options.length < 1) {
+      log(
+        LogType.ERROR,
+        "CLI question of type 'RADIO' did not have any valid options provided",
+      );
+      cli.close();
+      return resolve(undefined);
+    }
+
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
+
+    console.log(question);
+
+    const showOptions = (initial: boolean = false) => {
+      if (!initial) {
+        process.stdout.write(`\x1b[${options.length}A`);
+        for (const _ of options) {
+          process.stdout.write("\x1b[2K");
+          process.stdout.write("\x1b[1B");
+        }
+        process.stdout.write(`\x1b[${options.length}A`);
+      }
+
+      for (const [id, option] of options.entries()) {
+        const selector = selected === id ? "▸ " : "  ";
+        console.log(`${selector}${option}`);
+      }
+    };
+
+    const handleKey = (_: string, key: { name: string }) => {
+      if (key.name === "down") {
+        selected = (selected + 1) % options.length;
+        showOptions();
+      } else if (key.name === "up") {
+        selected = (selected - 1 + options.length) % options.length;
+        showOptions();
+      } else if (key.name === "return") {
+        cleanup();
+        resolve(options[selected]);
+      }
+    };
+
+    const cleanup = () => {
+      process.stdin.setRawMode(false);
+      process.stdin.removeListener("keypress", handleKey);
+      cli.close();
+    };
+
+    process.stdin.on("keypress", handleKey);
+    showOptions(true);
+  },
 };
