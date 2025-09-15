@@ -108,7 +108,7 @@ export const gradientise = (
 ): string => {
   const startRGB = hexToRgb(startHex);
   const endRGB = hexToRgb(endHex);
-  const chars = text.split("");
+  const chars = Array.from(text);
   const isBg = opts?.background ?? false;
 
   return (
