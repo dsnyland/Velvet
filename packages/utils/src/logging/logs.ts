@@ -1,5 +1,5 @@
 import { getCallerInfo } from "../misc/lib";
-import { LogType } from "./types";
+import { LogType, RGB } from "./types";
 
 const BASE_PREFIX = "&r&4Velvet&r 🞙 ";
 
@@ -75,4 +75,46 @@ export const colourise = (text: string): string => {
     );
   }
   return text;
+};
+
+export const hexToRgb = (hex: string): RGB => {
+  hex = hex.replace(/^#/, "");
+  if (hex.length === 3)
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  const bigint = parseInt(hex, 16);
+  return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+};
+
+export const interpolateColor = (start: RGB, end: RGB, factor: number): RGB => {
+  return [
+    Math.round(start[0] + factor * (end[0] - start[0])),
+    Math.round(start[1] + factor * (end[1] - start[1])),
+    Math.round(start[2] + factor * (end[2] - start[2])),
+  ];
+};
+
+export const gradientise = (
+  text: string,
+  startHex: string,
+  endHex: string,
+  opts?: { background?: boolean },
+): string => {
+  const startRGB = hexToRgb(startHex);
+  const endRGB = hexToRgb(endHex);
+  const chars = text.split("");
+  const isBg = opts?.background ?? false;
+
+  return (
+    chars
+      .map((char, i) => {
+        const factor = i / Math.max(chars.length - 1, 1);
+        const [r, g, b] = interpolateColor(startRGB, endRGB, factor);
+        const code = `\x1b[${isBg ? "48" : "38"};2;${r};${g};${b}m`;
+        return `${code}${char}`;
+      })
+      .join("") + "\x1b[0m"
+  );
 };

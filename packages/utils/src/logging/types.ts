@@ -4,3 +4,5 @@ export enum LogType {
   WARN = "warn",
   ERROR = "error",
 }
+
+export type RGB = [number, number, number];
