@@ -1,0 +1,45 @@
+{
+  "name": "@velvet/cli",
+  "version": "0.1.0",
+  "description": "Your favourite framework needs your favourite CLI!",
+  "author": "dsnyland",
+  "license": "MIT",
+  "bin": {
+    "velvet": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "velvet",
+    "cli",
+    "framework",
+    "static-site",
+    "typescript"
+  ],
+  "scripts": {
+    "build": "tsc --project cfg/tsconfig.json",
+    "dev": "tsc -w --project cfg/tsconfig.json",
+    "test": "node tests/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dsnyland/velvet.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/dsnyland/velvet/issues"
+  },
+  "homepage": "https://github.com/dsnyland/velvet#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@velvet/utils": "workspace:*"
+  }
+}
