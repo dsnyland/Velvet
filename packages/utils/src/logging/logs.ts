@@ -100,7 +100,11 @@ export const gradientise = (
   text: string,
   startHex: string,
   endHex: string,
-  opts?: { background?: boolean },
+  opts?: {
+    background?: boolean;
+    foregroundHex?: string;
+    backgroundHex?: string;
+  },
 ): string => {
   const startRGB = hexToRgb(startHex);
   const endRGB = hexToRgb(endHex);
@@ -112,7 +116,19 @@ export const gradientise = (
       .map((char, i) => {
         const factor = i / Math.max(chars.length - 1, 1);
         const [r, g, b] = interpolateColor(startRGB, endRGB, factor);
-        const code = `\x1b[${isBg ? "48" : "38"};2;${r};${g};${b}m`;
+
+        let code = `\x1b[${isBg ? "48" : "38"};2;${r};${g};${b}m`;
+
+        if (isBg && opts?.foregroundHex) {
+          const [fr, fg, fb] = hexToRgb(opts.foregroundHex);
+          code += `\x1b[38;2;${fr};${fg};${fb}m`;
+        }
+
+        if (!isBg && opts?.backgroundHex) {
+          const [br, bg, bb] = hexToRgb(opts.backgroundHex);
+          code += `\x1b[48;2;${br};${bg};${bb}m`;
+        }
+
         return `${code}${char}`;
       })
       .join("") + "\x1b[0m"
