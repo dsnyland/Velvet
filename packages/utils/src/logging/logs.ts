@@ -20,6 +20,7 @@ export const log = (type: LogType, data: unknown) => {
 };
 
 export const consoleColours: Record<string, string> = {
+  // Text Styles
   "&r": "\x1b[0m", // reset
   "&l": "\x1b[1m", // bold/bright
   "&o": "\x1b[3m", // italic
@@ -27,6 +28,7 @@ export const consoleColours: Record<string, string> = {
   "&m": "\x1b[9m", // strike-through
   "&k": "\x1b[8m", // obfuscated
 
+  // Text Colour
   "&0": "\x1b[30m", // black
   "&1": "\x1b[34m", // dark blue
   "&2": "\x1b[32m", // dark green
@@ -44,6 +46,25 @@ export const consoleColours: Record<string, string> = {
   "&d": "\x1b[95m", // light purple
   "&e": "\x1b[93m", // yellow
   "&f": "\x1b[97m", // white
+
+  // Background
+  "&B0": "\x1b[40m", // black
+  "&B1": "\x1b[44m", // dark blue
+  "&B2": "\x1b[42m", // dark green
+  "&B3": "\x1b[46m", // dark aqua / cyan
+  "&B4": "\x1b[41m", // dark red
+  "&B5": "\x1b[45m", // purple
+  "&B6": "\x1b[43m", // gold / yellow
+  "&B7": "\x1b[47m", // gray
+  "&B8": "\x1b[100m", // dark gray
+  "&B9": "\x1b[104m", // blue
+
+  "&Ba": "\x1b[102m", // green
+  "&Bb": "\x1b[106m", // aqua / light cyan
+  "&Bc": "\x1b[101m", // red
+  "&Bd": "\x1b[105m", // light purple
+  "&Be": "\x1b[103m", // yellow
+  "&Bf": "\x1b[107m", // white
 };
 
 export const colourise = (text: string): string => {
