@@ -1,6 +1,7 @@
 import readline from "readline";
 import { QuestionProps, QuestionType } from "./types";
 import { log, LogType } from "@velvet/utils";
+import { clearTerminalLines } from "../utils/terminal";
 
 export const ask = (
   question: string,
@@ -48,12 +49,7 @@ const questions = {
 
     const showOptions = (initial: boolean = false) => {
       if (!initial) {
-        process.stdout.write(`\x1b[${options.length}A`);
-        for (const _ of options) {
-          process.stdout.write("\x1b[2K");
-          process.stdout.write("\x1b[1B");
-        }
-        process.stdout.write(`\x1b[${options.length}A`);
+        clearTerminalLines(options.length);
       }
 
       for (const [id, option] of options.entries()) {
