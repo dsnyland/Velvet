@@ -1,11 +1,11 @@
 {
-  "name": "@velvet/cli",
+  "name": "create-velvet",
   "version": "0.1.0",
   "description": "Your favourite framework needs your favourite CLI!",
   "author": "dsnyland",
   "license": "MIT",
   "bin": {
-    "velvet": "./dist/index.js"
+    "create-velvet": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
