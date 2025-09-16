@@ -5,8 +5,8 @@ import { ask } from "./cli/input/lib";
 import { QuestionType } from "./cli/input/types";
 import { clearTerminalLines } from "./cli/utils/terminal";
 
-const emptyPadding = "          ";
-const prefixPadding = "  ";
+export const emptyPadding = "          ";
+export const prefixPadding = "  ";
 
 const normalisePath = (path: string): string => {
   let normalisedPath = path.replace(/\/+$/, "");
@@ -53,10 +53,13 @@ const prefix = (title: string): string =>
     `${emptyPadding}${gradientise(`${name}`, "#6e6e6e", "#6e6e6e")}\n`,
   );
 
-  const option = await ask("2. Pick an option:", QuestionType.RADIO, [
-    "Option 1",
-    "2nd Option",
-    "Hello, third option!",
-  ]);
+  const option = await ask(
+    prefix("▸ base") +
+    prefixPadding +
+    "Wanna power up your project with a base template?\n" +
+    emptyPadding,
+    QuestionType.RADIO,
+    ["Minimal setup", "No thanks"],
+  );
   console.log("Selected option:", option);
 })();

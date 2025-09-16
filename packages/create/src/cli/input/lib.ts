@@ -1,7 +1,8 @@
 import readline from "readline";
 import { QuestionProps, QuestionType } from "./types";
-import { log, LogType } from "@velvet/utils";
+import { colourise, log, LogType } from "@velvet/utils";
 import { clearTerminalLines } from "../utils/terminal";
+import { emptyPadding, prefixPadding } from "../..";
 
 export const ask = (
   question: string,
@@ -53,8 +54,9 @@ const questions = {
       }
 
       for (const [id, option] of options.entries()) {
-        const selector = selected === id ? "▸ " : "  ";
-        console.log(`${selector}${option}`);
+        const selector =
+          selected === id ? emptyPadding.slice(0, -2) + "&6▸ " : emptyPadding;
+        console.log(colourise(`&r${selector}${option}&r`));
       }
     };
 
@@ -67,7 +69,7 @@ const questions = {
         showOptions();
       } else if (key.name === "return") {
         cleanup();
-        resolve(options[selected]);
+        resolve(selected);
       }
     };
 
