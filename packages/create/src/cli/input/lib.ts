@@ -2,7 +2,7 @@ import readline from "readline";
 import { QuestionProps, QuestionType } from "./types";
 import { colourise, log, LogType } from "@velvet/utils";
 import { clearTerminalLines } from "../utils/terminal";
-import { emptyPadding, prefixPadding } from "../..";
+import { emptyPadding } from "../..";
 
 export const ask = (
   question: string,

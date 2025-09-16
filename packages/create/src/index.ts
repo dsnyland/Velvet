@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-import { colourise, gradientise } from "@velvet/utils";
+import { gradientise } from "@velvet/utils";
 import { ask } from "./cli/input/lib";
 import { QuestionType } from "./cli/input/types";
 import { clearTerminalLines } from "./cli/utils/terminal";
+import intro from "./cli/cutscenes/intro";
 
-export const emptyPadding = "          ";
+export const emptyPadding = "           ";
 export const prefixPadding = "  ";
 
 const normalisePath = (path: string): string => {
@@ -19,14 +20,14 @@ const normalisePath = (path: string): string => {
 };
 
 const prefix = (title: string): string =>
-  gradientise(` ${title} `, "#e4a055", "#ce4a77", {
+  gradientise(` ${title} `, "#6d1b3b", "#3d174f", {
     background: true,
-    foregroundHex: "#000000",
+    foregroundHex: "#FFFFFF",
   });
 
-(async () => {
+const createNewProject = async () => {
   let home = await ask(
-    prefix("\u{1F382} home") +
+    prefix("📂 home") +
     prefixPadding +
     "Let's pick a home for your project!\n" +
     emptyPadding,
@@ -41,7 +42,7 @@ const prefix = (title: string): string =>
   );
 
   const name = await ask(
-    prefix("▸ name") +
+    prefix("📝 name") +
     prefixPadding +
     "Now let's pick a name for your project!\n" +
     emptyPadding,
@@ -54,7 +55,7 @@ const prefix = (title: string): string =>
   );
 
   const option = await ask(
-    prefix("▸ base") +
+    prefix("🧩 base") +
     prefixPadding +
     "Wanna power up your project with a base template?\n" +
     emptyPadding,
@@ -62,4 +63,9 @@ const prefix = (title: string): string =>
     ["Minimal setup", "No thanks"],
   );
   console.log("Selected option:", option);
+};
+
+(async () => {
+  await intro();
+  await createNewProject();
 })();
