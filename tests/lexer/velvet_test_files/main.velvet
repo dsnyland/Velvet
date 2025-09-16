@@ -2,11 +2,11 @@
 		--- 
 		let counter = 0; 
 		--- 
-		<div onclick={counter++}> 
+		<div {counter} onclick={counter++}> 
 			{counter} 
 		</div> 
 </Component>
-<Component2> 
+<Component2 default> 
 		--- 
 		let counter = 0; 
 		--- 

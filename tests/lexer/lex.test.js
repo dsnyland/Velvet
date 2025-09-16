@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const { Lexer } = require("../../dist/cjs/compiler/core/compile/type/lexer/tags/Node.js");
-const { TokenKind } = require("../../dist/cjs/compiler/core/compile/type/lexer/types/Node.types.js");
+const { Lexer } = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/tags.js");
+const { TokenKind } = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/types.js");
 
 const TEST_DIR = path.join(__dirname, "velvet_test_files");
 

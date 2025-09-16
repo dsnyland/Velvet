@@ -1,0 +1,90 @@
+[
+  {
+    "type": "Element",
+    "name": "Component",
+    "attrs": [],
+    "children": [
+      {
+        "type": "Text",
+        "value": " \n\t\t--- \n\t\tlet counter = 0; \n\t\t--- \n\t\t"
+      },
+      {
+        "type": "Element",
+        "name": "div",
+        "attrs": [
+          {
+            "name": "counter",
+            "value": {
+              "type": "Expr",
+              "code": "counter"
+            }
+          },
+          {
+            "name": "onclick",
+            "value": {
+              "type": "Expr",
+              "code": "counter++"
+            }
+          }
+        ],
+        "children": [
+          {
+            "type": "Expr",
+            "code": "counter"
+          }
+        ],
+        "selfClosing": false
+      }
+    ],
+    "selfClosing": false
+  },
+  {
+    "type": "Element",
+    "name": "Component2",
+    "attrs": [
+      {
+        "name": "default",
+        "value": true
+      }
+    ],
+    "children": [
+      {
+        "type": "Text",
+        "value": " \n\t\t--- \n\t\tlet counter = 0; \n\t\t--- \n\t\t"
+      },
+      {
+        "type": "Element",
+        "name": "input",
+        "attrs": [
+          {
+            "name": "title",
+            "value": "\"Hello WOrld\""
+          }
+        ],
+        "children": [],
+        "selfClosing": true
+      },
+      {
+        "type": "Element",
+        "name": "div",
+        "attrs": [
+          {
+            "name": "onclick",
+            "value": {
+              "type": "Expr",
+              "code": "counter++"
+            }
+          }
+        ],
+        "children": [
+          {
+            "type": "Expr",
+            "code": "counter"
+          }
+        ],
+        "selfClosing": false
+      }
+    ],
+    "selfClosing": false
+  }
+]

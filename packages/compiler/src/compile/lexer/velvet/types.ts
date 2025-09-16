@@ -16,7 +16,9 @@ export enum TokenKind {
   PropName, // "disabled"
   PropEqual, // "the equal that splits the name with the value"
   JSExpression, // "{counter++} embedded inside the HTML"
+  JSTagShortAttr, // {counter} when counter is already defined -> couner={(...props) => counter(...props)} or {...obj} as props as tags
   EOF, // end of file
+
 }
 
 export interface SourcePos {

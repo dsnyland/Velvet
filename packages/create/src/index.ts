@@ -26,7 +26,7 @@ const prefix = (title: string): string =>
 
 (async () => {
   let home = await ask(
-    prefix("▸ home") +
+    prefix("\u{1F382} home") +
     prefixPadding +
     "Let's pick a home for your project!\n" +
     emptyPadding,

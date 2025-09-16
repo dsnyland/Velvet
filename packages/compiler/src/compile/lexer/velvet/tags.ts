@@ -204,8 +204,18 @@ export class Lexer {
         this.advance(1);
       }
     }
+
+    if (this.inTag) {
+      return {
+        kind: TokenKind.JSTagShortAttr,
+        start,
+        end: this.mark(),
+        value: value.trim(),
+      };
+    }
+
     return {
-      kind: TokenKind.PropEqual,
+      kind: TokenKind.JSExpression,
       start,
       end: this.mark(),
       value: value.trim(),
@@ -245,7 +255,7 @@ export class Lexer {
     };
   }
 
-  private lexText(): TextToken {
+  private lexText(): Token {
     const start = this.mark();
     let value = "";
     while (!this.isEOF()) {
@@ -254,6 +264,11 @@ export class Lexer {
       value += c;
       this.advance(1);
     }
+
+    if (!value.trim()) {
+      return this.nextToken();
+    }
+
     return {
       kind: TokenKind.Text,
       start,
