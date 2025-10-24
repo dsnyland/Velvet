@@ -1,17 +1,21 @@
 [
   {
+    "type": "Text",
+    "value": "---\n\n\t// it's own js\n\n\tlet asdf = 10;\n\n---\n\n"
+  },
+  {
     "type": "Element",
     "name": "Component",
     "attrs": [],
     "children": [
       {
         "type": "Text",
-        "value": " \n\t\t--- \n\t\tlet counter = 0; \n\t\t--- \n\t\t"
+        "value": " \n\t\t--- \n\t\t\t// another js\n\n\t\t\tlet counter = 0; \n\t\t--- \n\t\t"
       },
       {
         "type": "Element",
         "name": "div",
-        "attrs": [
+        "attrs": [  
           {
             "name": "counter",
             "value": {
@@ -50,7 +54,7 @@
     "children": [
       {
         "type": "Text",
-        "value": " \n\t\t--- \n\t\tlet counter = 0; \n\t\t--- \n\t\t"
+        "value": " \n\t\t--- \n\t\t// a third js\n\n\t\tlet counter = 0; \n\t\t--- \n\t\t"
       },
       {
         "type": "Element",

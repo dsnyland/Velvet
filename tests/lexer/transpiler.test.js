@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
+const { Transpile } = require("../../packages/compiler/dist/cjs/compile/transpiler/velvet/tags.js");
 const { Lexer } = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/tags.js");
 const { TokenKind } = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/types.js");
 const { Parser } = require("../../packages/compiler/dist/cjs/compile/AST/velvet/parser.js");
@@ -38,7 +39,9 @@ for (const file of files) {
   const ast = parser.parse();
 
   // Pretty-print AST
-  // console.dir(ast, { depth: null, colors: true });
+  console.log("--------------");
+  console.dir(ast, { depth: null, colors: true });
+  console.log("--------------");
 
   fs.writeFileSync(
     path.join(OUT_TEST_DIR, `AST_${file}.json`),
@@ -46,6 +49,9 @@ for (const file of files) {
     "utf-8"
   );
 
-
-  console.log("\n====================================\n");
+  console.log("Transpiling");
+  // now we transpile
+  const transpiler = new Transpile(ast);
+  const transpiled_ast = transpiler.Transpile();
+  console.dir(transpiled_ast, {depth: null, colors: true});
 }

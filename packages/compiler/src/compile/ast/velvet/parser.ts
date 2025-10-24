@@ -2,7 +2,6 @@
 import { Token, TokenKind } from '../../lexer/velvet/types';
 import { Node, ElementNode, TextNode, ExprNode, Attr, AttrValue } from "./types";
 
-
 export class Parser {
   private i = 0;
   constructor(private readonly tokens: Token[]) { }

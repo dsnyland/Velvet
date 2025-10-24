@@ -1,6 +1,15 @@
+---
+	/ it's own js
+
+	let asdf = 10;
+
+---
+
 <Component> 
 		--- 
-		let counter = 0; 
+			// another js
+
+			let counter = 0; 
 		--- 
 		<div {counter} onclick={counter++}> 
 			{counter} 
@@ -8,10 +17,12 @@
 </Component>
 <Component2 default> 
 		--- 
+		// a third js
+
 		let counter = 0; 
 		--- 
 		<input title="Hello WOrld" />
 		<div onclick={counter++}> 
 			{counter} 
-		</div> 
+		</div>
 </Component2>

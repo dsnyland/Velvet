@@ -11,3 +11,8 @@ export const getCallerInfo = () => {
     ? `${file}:${line}`
     : "<unknown caller... samsung smart fridge!?>";
 };
+
+
+export const replaceAll = (text: string, target: string, value: string): string => {
+  return text.split(target).join(value);
+}
