@@ -5,6 +5,8 @@ import { ask } from "./cli/input/lib";
 import { QuestionType } from "./cli/input/types";
 import { clearTerminalLines } from "./cli/utils/terminal";
 import intro from "./cli/cutscenes/intro";
+import path from "path";
+import fs from "fs";
 
 export const emptyPadding = "           ";
 export const prefixPadding = "  ";
@@ -25,16 +27,46 @@ const prefix = (title: string): string =>
     foregroundHex: "#FFFFFF",
   });
 
-const createNewProject = async () => {
+const askProjectHome = async (
+  hadError: boolean = false,
+): Promise<{
+  home: string;
+  projectDirectory: string;
+} | void> => {
   let home = await ask(
     prefix("📂 home") +
     prefixPadding +
-    "Let's pick a home for your project!\n" +
+    "Let's pick a home for your project!" +
+    (hadError
+      ? ` ${gradientise("[Folder already exists]", "#ffcdee", "#ffcdee")}\n`
+      : "\n") +
     emptyPadding,
     QuestionType.TEXT,
   );
 
-  clearTerminalLines(1);
+  const currentDirectory = process.cwd();
+  const projectDirectory = path.resolve(currentDirectory, home as string);
+
+  const directoryExists = fs.existsSync(projectDirectory);
+  if (directoryExists) {
+    clearTerminalLines(2);
+    return askProjectHome(true);
+  }
+
+  return { home: home as string, projectDirectory };
+};
+
+const createNewProject = async () => {
+  const projectHome = await askProjectHome();
+  if (!projectHome) return;
+
+  let { home, projectDirectory } = projectHome;
+
+  clearTerminalLines(2);
+
+  console.log(
+    prefix("📂 home") + prefixPadding + "Let's pick a home for your project!",
+  );
 
   home = normalisePath(home as string);
   console.log(
@@ -62,7 +94,9 @@ const createNewProject = async () => {
     QuestionType.RADIO,
     ["Minimal setup", "No thanks"],
   );
-  console.log("Selected option:", option);
+
+  console.log("Selected Option:", option);
+  fs.mkdirSync(projectDirectory);
 };
 
 (async () => {
