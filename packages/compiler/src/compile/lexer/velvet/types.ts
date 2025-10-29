@@ -17,8 +17,8 @@ export enum TokenKind {
   PropEqual, // "the equal that splits the name with the value"
   JSExpression, // "{counter++} embedded inside the HTML"
   JSTagShortAttr, // {counter} when counter is already defined -> couner={(...props) => counter(...props)} or {...obj} as props as tags
+  JSEmbeddedExpr, // the --- console.log("Hello World") ---
   EOF, // end of file
-
 }
 
 export interface SourcePos {
@@ -32,6 +32,11 @@ export interface BaseToken {
   start: SourcePos;
   end: SourcePos;
   value?: string;
+}
+
+export interface EmbeddedExprToken extends BaseToken {
+  kind: TokenKind.JSEmbeddedExpr;
+  code: string;
 }
 
 export interface IdentifierToken extends BaseToken {
@@ -64,4 +69,5 @@ export type Token =
   | StringToken
   | TextToken
   | SimpleToken
-  | BaseToken;
+  | BaseToken
+  | EmbeddedExprToken;

@@ -1,8 +1,14 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../../cfg/tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "Node16",
+    "target": "ES2020",
     "outDir": "../dist/cjs",
-    "declarationDir": "../dist/types"
-  }
+    "declaration": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node16",   
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": ["../src"]
 }

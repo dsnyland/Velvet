@@ -1,9 +1,14 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../../cfg/tsconfig.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "Node16",
+    "target": "ES2020",
     "outDir": "../dist/mjs",
-    "declarationDir": "../dist/types"
-  }
+    "declaration": true,
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext",   
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": ["../src"]
 }

@@ -1,6 +1,8 @@
+import { TokenizationError } from "@velvet/errors";
 import {
   BaseToken,
   CharFunc,
+  EmbeddedExprToken,
   LexerCharMap,
   SimpleToken,
   SourcePos,
@@ -17,6 +19,7 @@ export class Lexer {
   private col: number;
   private inTag = false;
   private seenTagName = false;
+  private inExpr = false;
 
   private characterLookahead = (width: number, kind: TokenKind): CharFunc => {
     return () => {
@@ -51,6 +54,7 @@ export class Lexer {
     // "=": () => this.simple(TokenKind.PropEqual, 1),
     // "}": this.characterLookahead(1, TokenKind.BraceClose),
     '"': () => this.lexString(),
+    "-": () => this.lexEmbeddedExpr(), 
   };
 
   constructor(source: string) {
@@ -181,6 +185,45 @@ export class Lexer {
       end: this.mark(),
       value,
     };
+  }
+ 
+  private CheckSequenceOfJSExpr(): boolean {
+    const c1 = this.peek(0);
+    const c2 = this.peek(1);
+    const c3 = this.peek(2);
+    // make sure it's 3 "-"
+    const c4 = this.peek(3);
+
+    if(c1 == "-" && c2 == "-" && c3 == "-" && c4 != "-") { this.advance(3); return true } ;
+    return false;
+  }
+
+  private lexEmbeddedExpr(): Token {
+    const start = this.mark();
+    
+    let isValidStart = this.CheckSequenceOfJSExpr();
+    if(!isValidStart && !this.inTag) 
+      throw new TokenizationError(start.line, start.column, this.peek(0), [""], "description", "", 2)
+
+    console.log("HERE");
+    console.log(start);
+    // console.log(this.peek(0));
+    let isClosed = false; 
+    while(!this.isEOF() || !isClosed) {
+      let char1 = this.peek(0); 
+      console.log("char");
+      console.log(char1.charCodeAt(0));
+      console.log(this.peek(1).charCodeAt(0));
+      isClosed = this.CheckSequenceOfJSExpr();
+    }
+    
+
+    // we need to expect 3*"-" THEN javascript code THEN 3*"-"
+    return {
+      kind: TokenKind.JSEmbeddedExpr,
+      code: "",
+    } as EmbeddedExprToken;
+
   }
 
   private lexJSExpression(): Token {

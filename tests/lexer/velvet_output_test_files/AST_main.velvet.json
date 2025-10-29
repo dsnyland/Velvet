@@ -1,7 +1,7 @@
 [
   {
     "type": "Text",
-    "value": "---\n\n\t// it's own js\n\n\tlet asdf = 10;\n\n---\n\n"
+    "value": "---\n\t/ it's own js\n\n\tlet asdf = 10;\n\n---\n\n"
   },
   {
     "type": "Element",
@@ -15,7 +15,7 @@
       {
         "type": "Element",
         "name": "div",
-        "attrs": [  
+        "attrs": [
           {
             "name": "counter",
             "value": {

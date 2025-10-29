@@ -2,36 +2,22 @@
   "name": "@velvet/errors",
   "version": "1.0.0",
   "description": "",
-  "author": "dsnyland",
-  "license": "MIT",
+  "author": "",
+  "license": "ISC",
   "main": "./dist/cjs/index.js",
   "module": "./dist/mjs/index.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/mjs/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
-    },
-    "require": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/cjs/index.js"
-    },
-    "import": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/mjs/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
     "dist"
   ],
-  "keywords": [
-    "velvet",
-    "errors",
-    "framework",
-    "static-site",
-    "typescript"
-  ],
+  "keywords": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/dsnyland/velvet.git",
@@ -49,9 +35,6 @@
     "clean": "rm -rf dist",
     "test": "node tests/*.test.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
     "typescript": "^5.6.3"
