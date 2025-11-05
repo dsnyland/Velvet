@@ -1,28 +1,26 @@
-
-export type Node = ElementNode | TextNode | ExprNode;
+export type Node = ElementNode | TextNode | ExpressionNode;
 
 export interface ElementNode {
   type: "Element";
   name: string;
-  attrs: Attr[];
+  attributes: Attribute[];
   children: Node[];
   selfClosing: boolean;
 }
 
-export interface Attr {
+export interface Attribute {
   name: string;
-  value: AttrValue;
+  value: AttributeValue;
 }
 
-export type AttrValue = string | ExprNode | true;
+export type AttributeValue = string | ExpressionNode | true;
 
 export interface TextNode {
   type: string; // Text
   value: string;
 }
 
-export interface ExprNode {
-  type: string, // Expr
+export interface ExpressionNode {
+  type: string; // Expression
   code: string;
 }
-

@@ -1,123 +1,155 @@
 import { TokenizationError } from "@velvet/errors";
 import {
   BaseToken,
-  CharFunc,
   EmbeddedExprToken,
-  LexerCharMap,
   SimpleToken,
   SourcePos,
   StringToken,
-  TextToken,
   Token,
   TokenKind,
 } from "./types";
 
 export class Lexer {
   private readonly src: string;
-  private idx: number;
+  private index: number;
   private line: number;
-  private col: number;
+  private column: number;
   private inTag = false;
   private seenTagName = false;
-  private inExpr = false;
+  private inExpression = false;
 
-  private characterLookahead = (width: number, kind: TokenKind): CharFunc => {
-    return () => {
-      const start = this.mark();
-      this.advance(width);
-      return this.simpleAt(kind, start, this.mark());
+  private characterLookahead = (width: number, kind: TokenKind): BaseToken => {
+    const start = this.mark();
+    this.advance(width);
+    return {
+      kind,
+      start,
+      end: this.mark(),
     };
   };
 
-  private LexerCharMap: LexerCharMap = {
-    "<": () => {
-      if (this.peek(1) === "/") {
+  private getBaseToken = (character: string): BaseToken | undefined => {
+    switch (character) {
+      case "<":
         const start = this.mark();
-        this.advance(2);
-        return this.simpleAt(TokenKind.CloseTagStart, start, this.mark());
-      }
-      const start = this.mark();
-      this.advance(1);
-      this.seenTagName = false;
-      return this.simpleAt(TokenKind.OpenTagStart, start, this.mark());
-    },
-    "/": () => {
-      if (this.peek(1) === ">") {
-        const start = this.mark();
-        this.advance(2);
-        return this.simpleAt(TokenKind.SelfCloseEnd, start, this.mark());
-      }
-      return this.lexText();
-    },
-    ">": this.characterLookahead(1, TokenKind.TagEnd),
-    "{": () => this.lexJSExpression(),
-    // "=": () => this.simple(TokenKind.PropEqual, 1),
-    // "}": this.characterLookahead(1, TokenKind.BraceClose),
-    '"': () => this.lexString(),
-    "-": () => this.lexEmbeddedExpr(), 
+
+        if (this.peek(1) === "/") {
+          this.advance(2);
+          return {
+            kind: TokenKind.CloseTagStart,
+            start,
+            end: this.mark(),
+          };
+        }
+
+        this.advance(1);
+        this.seenTagName = false;
+
+        return {
+          kind: TokenKind.OpenTagStart,
+          start,
+          end: this.mark(),
+        };
+
+      case "/":
+        if (this.peek(1) === ">") {
+          const start = this.mark();
+          this.advance(2);
+
+          return {
+            kind: TokenKind.SelfCloseEnd,
+            start,
+            end: this.mark(),
+          };
+        }
+
+        return this.getTextToken();
+
+      case ">":
+        return this.characterLookahead(1, TokenKind.TagEnd);
+
+      case "{":
+        this.getExpressionToken();
+
+      case '"':
+        return this.getStringToken();
+
+      case "-":
+        return this.getEmbeddedExpressionToken();
+    }
   };
 
   constructor(source: string) {
     this.src = source;
-    this.idx = 0;
+    this.index = 0;
     this.line = 1;
-    this.col = 1;
+    this.column = 1;
   }
 
-  tokenize(): Token[] {
+  tokenise(): Token[] {
     const tokens: Token[] = [];
-    let t = this.nextToken();
-    tokens.push(t);
-    while (t.kind !== TokenKind.EOF) {
-      t = this.nextToken();
-      tokens.push(t);
+
+    let token = this.nextToken();
+    tokens.push(token);
+
+    while (token.kind !== TokenKind.EOF) {
+      token = this.nextToken();
+      tokens.push(token);
     }
+
     return tokens;
   }
 
   private nextToken(): Token {
-    if (this.isEOF()) return this.simple(TokenKind.EOF, 0);
+    if (this.isEOF()) return this.getSimpleToken(TokenKind.EOF, 0);
 
-    const ch = this.peek(0);
-    const handler = this.LexerCharMap[ch];
-    if (handler) {
-      const t = handler();
-      if (t.kind === TokenKind.OpenTagStart) this.inTag = true;
-      if (t.kind === TokenKind.TagEnd || t.kind === TokenKind.SelfCloseEnd)
+    const character = this.peek(0);
+    const baseToken = this.getBaseToken(character);
+
+    if (baseToken) {
+      if (baseToken.kind === TokenKind.OpenTagStart) this.inTag = true;
+      if (
+        baseToken.kind === TokenKind.TagEnd ||
+        baseToken.kind === TokenKind.SelfCloseEnd
+      )
         this.inTag = false;
-      return t;
+
+      return baseToken;
     }
 
     if (this.inTag) {
-      if (this.isIdentStart(ch)) {
-        const tok = this.lexIdentifier();
+      if (this.isIdentifierStart(character)) {
+        // Changelog: Lex Luthor removed from the codebase
+        const sukdik = this.getIdentifierToken();
 
         if (!this.seenTagName) {
           this.seenTagName = true;
-          tok.kind = TokenKind.Identifier;
+          sukdik.kind = TokenKind.Identifier;
         } else {
-          tok.kind = TokenKind.PropName;
+          sukdik.kind = TokenKind.PropName;
         }
 
-        return tok;
+        return sukdik;
       }
 
-      if (/\s/.test(ch)) {
+      if (/\s/.test(character)) {
         this.advance(1);
         return this.nextToken();
       }
 
-      if (ch === "=") {
+      if (character === "=") {
         const start = this.mark();
         this.advance(1);
+
         while (/\s/.test(this.peek(0))) this.advance(1);
 
         let value = "";
+
         if (this.peek(0) === '"') {
-          const str = this.lexString();
+          const str = this.getStringToken();
           value = str.value;
         } else if (this.peek(0) === "{") {
-          const expr = this.lexJSExpression();
+          const expr = this.getExpressionToken();
           value = expr.value ?? "";
         }
 
@@ -129,18 +161,18 @@ export class Lexer {
         };
       }
 
-      if (ch === '"') {
-        return this.lexString();
+      if (character === '"') {
+        return this.getStringToken();
       }
-      if (ch === "{") {
-        return this.lexJSExpression();
+      if (character === "{") {
+        return this.getExpressionToken();
       }
 
-      if (ch === ">") {
-        const tok = this.simple(TokenKind.TagEnd, 1);
+      if (character === ">") {
+        const sukdik = this.getSimpleToken(TokenKind.TagEnd, 1);
         this.inTag = false;
         this.seenTagName = false;
-        return tok;
+        return sukdik;
       }
 
       if (this.peek(0) === "/" && this.peek(1) === ">") {
@@ -148,21 +180,26 @@ export class Lexer {
         this.advance(2);
         this.inTag = false;
         this.seenTagName = false;
-        return this.simpleAt(TokenKind.SelfCloseEnd, start, this.mark());
+
+        return {
+          kind: TokenKind.SelfCloseEnd,
+          start,
+          end: this.mark(),
+        };
       }
 
       this.advance(1);
       return this.nextToken();
     }
 
-    if (this.isIdentStart(ch)) {
-      return this.lexIdentifier();
+    if (this.isIdentifierStart(character)) {
+      return this.getIdentifierToken();
     }
 
-    return this.lexText();
+    return this.getTextToken();
   }
 
-  private lexIdentifier(): Token {
+  private getIdentifierToken(): Token {
     const start = this.mark();
     let value = "";
 
@@ -170,9 +207,9 @@ export class Lexer {
     this.advance(1);
 
     while (!this.isEOF()) {
-      const c = this.peek(0);
-      if (this.isIdentPart(c)) {
-        value += c;
+      const character = this.peek(0);
+      if (this.isIdentifierPart(character)) {
+        value += character;
         this.advance(1);
       } else {
         break;
@@ -186,56 +223,62 @@ export class Lexer {
       value,
     };
   }
- 
-  private CheckSequenceOfJSExpr(): boolean {
-    const c1 = this.peek(0);
-    const c2 = this.peek(1);
-    const c3 = this.peek(2);
-    // make sure it's 3 "-"
-    const c4 = this.peek(3);
 
-    if(c1 == "-" && c2 == "-" && c3 == "-" && c4 != "-") { this.advance(3); return true } ;
-    return false;
+  private isValidExpressionSequence(): boolean {
+    const sequenceSize = 3;
+
+    for (const characterIndex in Array.from({ length: sequenceSize })) {
+      if (this.peek(Number(characterIndex)) == "-") continue;
+      return false;
+    }
+
+    if (this.peek(sequenceSize) == "-") return false;
+
+    this.advance(sequenceSize);
+    return true;
   }
 
-  private lexEmbeddedExpr(): Token {
+  private getEmbeddedExpressionToken(): Token {
     const start = this.mark();
-    
-    let isValidStart = this.CheckSequenceOfJSExpr();
-    if(!isValidStart && !this.inTag) 
-      throw new TokenizationError(start.line, start.column, this.peek(0), [""], "description", "", 2)
+    const isValidStart = this.isValidExpressionSequence();
 
-    console.log("HERE");
-    console.log(start);
-    // console.log(this.peek(0));
-    let isClosed = false; 
-    while(!this.isEOF() || !isClosed) {
-      let char1 = this.peek(0); 
-      console.log("char");
-      console.log(char1.charCodeAt(0));
-      console.log(this.peek(1).charCodeAt(0));
-      isClosed = this.CheckSequenceOfJSExpr();
+    if (!isValidStart && !this.inTag)
+      throw new TokenizationError(
+        start.line,
+        start.column,
+        this.peek(0),
+        [""],
+        "description",
+        "",
+        2,
+      );
+
+    let isClosed = false;
+
+    while (!this.isEOF() || !isClosed) {
+      let char1 = this.peek(0);
+      isClosed = this.isValidExpressionSequence();
     }
-    
 
     // we need to expect 3*"-" THEN javascript code THEN 3*"-"
     return {
       kind: TokenKind.JSEmbeddedExpr,
       code: "",
     } as EmbeddedExprToken;
-
   }
 
-  private lexJSExpression(): Token {
+  private getExpressionToken(): Token {
     const start = this.mark();
     this.advance(1);
+
     let depth = 1;
     let value = "";
+
     while (!this.isEOF() && depth > 0) {
-      const c = this.peek(0);
-      if (c === "{") {
+      const character = this.peek(0);
+      if (character === "{") {
         depth++;
-      } else if (c === "}") {
+      } else if (character === "}") {
         depth--;
         if (depth === 0) {
           this.advance(1);
@@ -243,7 +286,7 @@ export class Lexer {
         }
       }
       if (depth > 0) {
-        value += c;
+        value += character;
         this.advance(1);
       }
     }
@@ -265,29 +308,29 @@ export class Lexer {
     };
   }
 
-  private lexString(): StringToken {
+  private getStringToken(): StringToken {
     const start = this.mark();
 
     this.advance(1);
     let value = "";
     while (!this.isEOF()) {
-      const c = this.peek(0);
-      if (c === '"') {
+      const character = this.peek(0);
+      if (character === '"') {
         this.advance(1);
         break;
       }
 
-      if (c === "\\" && this.peek(1) === '"') {
+      if (character === "\\" && this.peek(1) === '"') {
         value += '\\"';
         this.advance(2);
         continue;
       }
-      if (c === "\\" && this.peek(1) === "\\") {
+      if (character === "\\" && this.peek(1) === "\\") {
         value += "\\\\";
         this.advance(2);
         continue;
       }
-      value += c;
+      value += character;
       this.advance(1);
     }
     return {
@@ -298,13 +341,13 @@ export class Lexer {
     };
   }
 
-  private lexText(): Token {
+  private getTextToken(): Token {
     const start = this.mark();
     let value = "";
     while (!this.isEOF()) {
-      const c = this.peek(0);
-      if (c === "<" || c === "{" || c === "}") break;
-      value += c;
+      const character = this.peek(0);
+      if (character === "<" || character === "{" || character === "}") break;
+      value += character;
       this.advance(1);
     }
 
@@ -320,64 +363,68 @@ export class Lexer {
     };
   }
 
-  private simple(kind: TokenKind, width: number): SimpleToken | BaseToken {
+  private getSimpleToken(
+    kind: TokenKind,
+    width: number,
+  ): SimpleToken | BaseToken {
     const start = this.mark();
     this.advance(width);
-    return this.simpleAt(kind, start, this.mark());
-  }
+    const end = this.mark();
 
-  private simpleAt(
-    kind: TokenKind,
-    start: SourcePos,
-    end: SourcePos,
-  ): BaseToken {
     return { kind, start, end };
   }
 
   private isEOF(): boolean {
-    return this.idx >= this.src.length;
+    return this.index >= this.src.length;
   }
 
   private peek(ahead: number): string {
-    const i = this.idx + ahead;
+    const i = this.index + ahead;
     return i < this.src.length ? this.src.charAt(i) : "";
   }
 
   private mark(): SourcePos {
-    return { index: this.idx, line: this.line, column: this.col };
+    return { index: this.index, line: this.line, column: this.column };
   }
 
   private advance(n: number): void {
     for (let i = 0; i < n; i++) {
       if (this.isEOF()) return;
-      const ch = this.src.charAt(this.idx);
-      this.idx++;
+      const ch = this.src.charAt(this.index);
+      this.index++;
       if (ch === "\n") {
         this.line++;
-        this.col = 1;
+        this.column = 1;
       } else {
-        this.col++;
+        this.column++;
       }
     }
   }
 
-  private isAlpha(c: string): boolean {
-    const cc = c.charCodeAt(0);
-    return (cc >= 65 && cc <= 90) || (cc >= 97 && cc <= 122);
-  }
-
-  private isDigit(c: string): boolean {
-    const cc = c.charCodeAt(0);
-    return cc >= 48 && cc <= 57;
-  }
-
-  private isIdentStart(c: string): boolean {
-    return this.isAlpha(c) || c === "_";
-  }
-
-  private isIdentPart(c: string): boolean {
+  private isAlphabetical(character: string): boolean {
+    const characterCode = character.charCodeAt(0);
     return (
-      this.isAlpha(c) || this.isDigit(c) || c === "_" || c === "-" || c === ":"
+      (characterCode >= 65 && characterCode <= 90) ||
+      (characterCode >= 97 && characterCode <= 122)
+    );
+  }
+
+  private isNumerical(character: string): boolean {
+    const characterCode = character.charCodeAt(0);
+    return characterCode >= 48 && characterCode <= 57;
+  }
+
+  private isIdentifierStart(character: string): boolean {
+    return this.isAlphabetical(character) || character === "_";
+  }
+
+  private isIdentifierPart(character: string): boolean {
+    return (
+      this.isAlphabetical(character) ||
+      this.isNumerical(character) ||
+      character === "_" ||
+      character === "-" ||
+      character === ":"
     );
   }
 }

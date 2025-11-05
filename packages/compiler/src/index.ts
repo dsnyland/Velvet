@@ -1,14 +1,14 @@
 export * from "./compile/lib";
 export * from "./compile/types";
 
-// lexer
+// Lexer
 export * from "./compile/lexer/velvet/tags";
 export * from "./compile/lexer/velvet/types";
 
-// ast
-export * from "./compile/ast/velvet/parser" 
-export * from "./compile/ast/velvet/types" 
+// AST
+export * from "./compile/ast/velvet/parser";
+export * from "./compile/ast/velvet/types";
 
-// transpiler
+// Transpiler
 export * from "./compile/transpiler/velvet/types";
 export * from "./compile/transpiler/velvet/tags";

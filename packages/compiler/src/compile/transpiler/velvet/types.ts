@@ -1,10 +1,4 @@
 import { Node } from "../../ast/velvet/types";
 
-// node_type, node_func
-export type NodeMapType = Record<string, (node: Node) => string>
-
-// javascript parsing schenanigans
-// title, hashing
-// export type 
-
-
+// Man this nodemap sure is useful, idk what it does tbh but whateverrrrr
+export type NodeMap = Record<string, (node: Node) => string>;

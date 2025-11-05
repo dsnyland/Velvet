@@ -1,7 +1,3 @@
-export type CharFunc = () => Token;
-
-export type LexerCharMap = Record<string, CharFunc>;
-
 export enum TokenKind {
   OpenTagStart, // "<"
   CloseTagStart, // "</"
@@ -47,10 +43,6 @@ export interface StringToken extends BaseToken {
   kind: TokenKind.String;
   value: string;
 }
-export interface TextToken extends BaseToken {
-  kind: TokenKind.Text;
-  value: string;
-}
 
 export interface SimpleToken extends BaseToken {
   kind:
@@ -67,7 +59,6 @@ export interface SimpleToken extends BaseToken {
 export type Token =
   | IdentifierToken
   | StringToken
-  | TextToken
   | SimpleToken
   | BaseToken
   | EmbeddedExprToken;

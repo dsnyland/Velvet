@@ -1,99 +1,109 @@
-import { Attr, ElementNode, ExprNode, Node, TextNode } from "../../ast/velvet/types";
-import { NodeMapType } from "./types";
-
+import {
+  Attribute,
+  ElementNode,
+  ExpressionNode,
+  Node,
+  TextNode,
+} from "../../ast/velvet/types";
 
 export class Transpile {
-  private final_elem: string = "";
-  
+  #finalElement: string = "";
 
-  private NodeMap: NodeMapType = {
-    "Text": (node: Node) => {
-      return this.ParseTextNode(node);
-    },
-    "Expr": (node: Node) => {
-      return this.ParseExprNode(node);
-    },
-    "Element": (node: Node) => {
-      return this.ParseElementNode(node);
-    },
-    "": (node: Node) => {
-      throw new Error(`Can't Transpile Unknown Node type ${node.type}`);
-    },
-  }
+  private parseNode = (node: Node): string => {
+    switch (node.type) {
+      default:
+        throw new Error(`[✖] Can't Transpile Unknown Node type ${node.type}`);
+      case "Text":
+        return this.parseTextNode(node);
+      case "Expr":
+        return this.parseExpressionNode(node);
+      case "Element":
+        return this.parseElementNode(node);
+    }
+  };
 
   constructor(private readonly AST: Node[]) { }
 
   Transpile(): string {
-    console.log("initalizing transpilation with");
-    console.dir(this.AST, {depth: null, colors: true});
+    console.log("[!] Initialising transpilation...");
+    console.dir(this.AST, { depth: null, colors: true });
+
     for (let node of this.AST) {
-      if (!Object.keys(this.NodeMap).includes(node.type)) {
-        this.NodeMap[""];
-      }
-      console.log("Found Node type of type " + node.type);
-      const MurderInElemStreat = this.NodeMap[node.type](node);
-      this.final_elem += MurderInElemStreat; 
+      const element = this.parseNode(node);
+      console.log(`[!] Found Node type '${node.type}'`);
+
+      const elementTypeBeat = element;
+
+      this.#finalElement += elementTypeBeat;
     }
-    console.log("Transpuilation done");
-    console.log(this.final_elem);
+
+    console.log("[✓] Transpiling complete", this.#finalElement);
+
+    /*
+      Stigma: Hey agent! Give me a transpiled string
+      Agent: One string coming right up!
+      Stigma: But hold the elements
+      Agent: Hold the elements??
+      Stigma: And hold the nodes
+      Agent: HOLD THE NODES!?
+      Stigma: Hey agent, give me a string WIT NOTHIN
+      Agent: WIT NOTHIN????????
+    */
     return "";
   }
 
-  private ParseElementNode(node: Node) {
-    const typed_node = node as ElementNode;
-    let element_node = "";
-    const attrs_str = "";
-    
-    element_node += typed_node.selfClosing ?
-      `<${typed_node.name} ${this.parseAttrs(typed_node.attrs)} />` :
-      `<${typed_node.name}>`
+  private parseElementNode(node: Node): string {
+    node = node as ElementNode;
+    let element = "";
 
-    let val = this.ParseChildren(typed_node.children);
-    element_node += val;
-    element_node += typed_node.selfClosing ? "" : `</ ${typed_node.name}>`
-    return element_node;
-    // this.final_elem += element_node;
+    element += node.selfClosing
+      ? `<${node.name} ${this.parseAttributes(node.attributes)} />`
+      : `<${node.name}>`;
+
+    let val = this.parseChildren(node.children);
+    element += val;
+    element += node.selfClosing ? "" : `</ ${node.name}>`;
+
+    return element;
   }
 
-  private parseAttrs(attributes: Attr[]): string {
-    return attributes.map((attr) => {
-      if (!attr.value) return attr.name;
+  private parseAttributes(attributes: Attribute[]): string {
+    return attributes
+      .map((attribute) => {
+        if (!attribute.value) return attribute.name;
 
-      if ((attr.value as ExprNode).type === "Expr") {
-        return `${attr.name}="{${this.ParseExprNode(attr.value as Node)}}"`;
-      }
+        if ((attribute.value as ExpressionNode).type === "Expression") {
+          return `${attribute.name}="{${this.parseExpressionNode(attribute.value as Node)}}"`;
+        }
 
-      if (typeof attr.value === "string") {
-        return `${attr.name}="${attr.value}"`;
-      }
+        if (typeof attribute.value === "string") {
+          return `${attribute.name}="${attribute.value}"`;
+        }
 
-      console.warn("didn't catch something ", attr.name);
-      return "";
-    }).join(" ");
+        console.warn(
+          `[✖] Format is incorrect for attribute '${attribute.name}'`,
+        );
+        return "";
+      })
+      .join(" ");
   }
 
-  private ParseExprNode(node: Node) {
-    const typed_node = node as ExprNode;
+  private parseExpressionNode(node: Node): string {
+    const typed_node = node as ExpressionNode;
     return typed_node.code + "expr";
-    // TODO: do this when you have acc integrated Javascript / Typescript
+    // TODO: do this when you have actually integrated JavaScript / TypeScript
   }
 
-
-  private ParseTextNode(node: Node) {
+  private parseTextNode(node: Node): string {
     return (node as TextNode).value ?? " ";
-    // this.final_elem += (node as TextNode).value ?? " ";
-    
   }
 
-  private ParseChildren(children: Node[]) {
+  private parseChildren(children: Node[]): string {
     let val = "";
     for (let node of children) {
       console.log(">> Found child Node type of type " + node.type);
-      val += this.NodeMap[node.type](node);
+      val += this.parseNode(node);
     }
     return val;
   }
 }
-
-
-
