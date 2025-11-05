@@ -1,7 +1,7 @@
 import {
   Attribute,
   ElementNode,
-  ExpressionNode,
+  MonoVariableExpressionNode,
   Node,
   TextNode,
 } from "../../ast/velvet/types";
@@ -72,7 +72,7 @@ export class Transpile {
       .map((attribute) => {
         if (!attribute.value) return attribute.name;
 
-        if ((attribute.value as ExpressionNode).type === "Expression") {
+        if ((attribute.value as MonoVariableExpressionNode).type === "Expression") {
           return `${attribute.name}="{${this.parseExpressionNode(attribute.value as Node)}}"`;
         }
 
@@ -89,7 +89,7 @@ export class Transpile {
   }
 
   private parseExpressionNode(node: Node): string {
-    const typed_node = node as ExpressionNode;
+    const typed_node = node as MonoVariableExpressionNode;
     return typed_node.code + "expr";
     // TODO: do this when you have actually integrated JavaScript / TypeScript
   }

@@ -3,9 +3,10 @@ import {
   Node,
   ElementNode,
   TextNode,
-  ExpressionNode,
   Attribute,
   AttributeValue,
+  MonoVariableExpressionNode,
+  EmbeddedExpressionNode,
 } from "./types";
 
 export class Parser {
@@ -35,7 +36,8 @@ export class Parser {
     const token = this.peek();
     if (token.kind === TokenKind.OpenTagStart) return this.parseElement();
     if (token.kind === TokenKind.Text) return this.parseText();
-    if (token.kind === TokenKind.JSExpression) return this.parseExpression();
+    if (token.kind === TokenKind.JSExpression) return this.parseMonoVariableExpression();
+    if (token.kind === TokenKind.JSEmbeddedExpr) return this.parseEmbeddedExpression();
     this.consume();
     return { type: "Text", value: "" };
   }
@@ -45,9 +47,15 @@ export class Parser {
     return { type: "Text", value: token.value ?? "" };
   }
 
-  private parseExpression(): ExpressionNode {
+  private parseEmbeddedExpression(): EmbeddedExpressionNode {
     const token = this.consume();
-    return { type: "Expression", code: token.value ?? "" };
+    return { type: "EmbeddedExpression", code: token.value ?? "" };
+
+  }
+
+  private parseMonoVariableExpression(): MonoVariableExpressionNode  {
+    const token = this.consume();
+    return { type: "MonoVariableExpression", code: token.value ?? "" };
   }
 
   private parseElement(): ElementNode {

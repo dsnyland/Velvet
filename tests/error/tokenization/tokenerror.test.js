@@ -1,7 +1,7 @@
 const path = require("path");
 
 
-const { TokenizationError } = require("../../../packages/errors/dist/compiler/tokenization/index.js");
+const { TokenisationError } = require("../../../packages/errors/dist/compiler/tokenization/index.js");
 const { FileNotFoundError } = require("../../../packages/errors/dist/generics/files/NotFound.js");
 let paths = [path.join(__dirname, "../../lexer/velvet_test_files/main.velvet")];
 

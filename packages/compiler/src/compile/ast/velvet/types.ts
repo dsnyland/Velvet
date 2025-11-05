@@ -1,4 +1,4 @@
-export type Node = ElementNode | TextNode | ExpressionNode;
+export type Node = ElementNode | TextNode | MonoVariableExpressionNode | EmbeddedExpressionNode;
 
 export interface ElementNode {
   type: "Element";
@@ -13,14 +13,20 @@ export interface Attribute {
   value: AttributeValue;
 }
 
-export type AttributeValue = string | ExpressionNode | true;
+export type AttributeValue = string | MonoVariableExpressionNode  | true | EmbeddedExpressionNode;
 
 export interface TextNode {
   type: string; // Text
   value: string;
 }
 
-export interface ExpressionNode {
+
+export interface MonoVariableExpressionNode {
+  type: string; // Expression
+  code: string;
+}
+
+export interface EmbeddedExpressionNode {
   type: string; // Expression
   code: string;
 }

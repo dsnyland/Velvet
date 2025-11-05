@@ -1,4 +1,4 @@
-import { TokenizationError } from "@velvet/errors";
+import { TokenisationError } from "@velvet/errors";
 import {
   BaseToken,
   EmbeddedExprToken,
@@ -17,6 +17,7 @@ export class Lexer {
   private inTag = false;
   private seenTagName = false;
   private inExpression = false;
+  private chileEscapeArray = ["<", "{", "}", "-"];
 
   private characterLookahead = (width: number, kind: TokenKind): BaseToken => {
     const start = this.mark();
@@ -69,7 +70,7 @@ export class Lexer {
         return this.characterLookahead(1, TokenKind.TagEnd);
 
       case "{":
-        this.getExpressionToken();
+        return this.getExpressionToken();
 
       case '"':
         return this.getStringToken();
@@ -192,6 +193,7 @@ export class Lexer {
       return this.nextToken();
     }
 
+    // next identifier 
     if (this.isIdentifierStart(character)) {
       return this.getIdentifierToken();
     }
@@ -226,6 +228,13 @@ export class Lexer {
 
   private isValidExpressionSequence(): boolean {
     const sequenceSize = 3;
+    /*
+      for(let characterIndex = 0; characterIndex < sequenceSize; characterIndex++) {
+        console.log(characterIndex);
+        if (this.peek(characterIndex) == "-") continue;
+        return false;
+      }
+    */
 
     for (const characterIndex in Array.from({ length: sequenceSize })) {
       if (this.peek(Number(characterIndex)) == "-") continue;
@@ -242,28 +251,36 @@ export class Lexer {
     const start = this.mark();
     const isValidStart = this.isValidExpressionSequence();
 
-    if (!isValidStart && !this.inTag)
-      throw new TokenizationError(
-        start.line,
-        start.column,
-        this.peek(0),
-        [""],
-        "description",
-        "",
-        2,
-      );
+    if(!isValidStart) {
+      return this.getTextToken();
+    }
 
     let isClosed = false;
+    let javaScriptText = "";
 
-    while (!this.isEOF() || !isClosed) {
-      let char1 = this.peek(0);
+    while (!isClosed) {
+      this.advance(1);
+      if(this.isEOF()) {
+        throw new TokenisationError(
+          this.line, 
+          this.column,
+          this.peek(0),
+          [""],
+          "Expected Closing Expression Statement",
+          "Error Parsing Expression Node",
+          2
+        )
+      }
       isClosed = this.isValidExpressionSequence();
+      javaScriptText += this.peek(0);
     }
 
     // we need to expect 3*"-" THEN javascript code THEN 3*"-"
     return {
       kind: TokenKind.JSEmbeddedExpr,
-      code: "",
+      value: javaScriptText,
+      start: start,
+      end: this.mark(),
     } as EmbeddedExprToken;
   }
 
@@ -346,7 +363,7 @@ export class Lexer {
     let value = "";
     while (!this.isEOF()) {
       const character = this.peek(0);
-      if (character === "<" || character === "{" || character === "}") break;
+      if (this.chileEscapeArray.includes(character)) break;
       value += character;
       this.advance(1);
     }
@@ -407,6 +424,16 @@ export class Lexer {
       (characterCode >= 65 && characterCode <= 90) ||
       (characterCode >= 97 && characterCode <= 122)
     );
+  }
+
+  private getNextNonEmptyCharacter(): string {
+    let currentCharacter = this.peek(0);
+    while (currentCharacter && /\s/.test(currentCharacter)) {
+      this.advance(1); 
+      currentCharacter = this.peek(0); 
+    }
+    
+    return currentCharacter;
   }
 
   private isNumerical(character: string): boolean {

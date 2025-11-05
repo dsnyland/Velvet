@@ -1,6 +1,6 @@
 import { getErrorMessage } from "../../utils/messagesConstructor";
 
-export class TokenizationError extends Error {
+export class TokenisationError extends Error {
   public filePath: string[]; 
   public offendingText: string;
   public context: number;

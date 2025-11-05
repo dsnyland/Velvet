@@ -32,7 +32,9 @@ export interface BaseToken {
 
 export interface EmbeddedExprToken extends BaseToken {
   kind: TokenKind.JSEmbeddedExpr;
-  code: string;
+  value: string;
+  start: SourcePos,
+  end: SourcePos,
 }
 
 export interface IdentifierToken extends BaseToken {

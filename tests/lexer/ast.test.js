@@ -19,7 +19,7 @@ for (const file of files) {
   // Step 1: Lexing
   console.log("TOKENS:");
   const lexer = new Lexer(source);
-  const tokens = lexer.tokenize();
+  const tokens = lexer.tokenise();
 
   for (const tok of tokens) {
     if ("value" in tok) {
@@ -38,7 +38,7 @@ for (const file of files) {
   const ast = parser.parse();
 
   // Pretty-print AST
-  // console.dir(ast, { depth: null, colors: true });
+  console.dir(ast, { depth: null, colors: true });
 
   fs.writeFileSync(
     path.join(OUT_TEST_DIR, `AST_${file}.json`),
