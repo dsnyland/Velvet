@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 import {
   Attribute,
   ElementNode,
@@ -15,7 +18,9 @@ export class Transpile {
         throw new Error(`[✖] Can't Transpile Unknown Node type ${node.type}`);
       case "Text":
         return this.parseTextNode(node);
-      case "Expr":
+      case "Expression":
+      case "EmbeddedExpression":
+      case "MonoVariableExpression":
         return this.parseExpressionNode(node);
       case "Element":
         return this.parseElementNode(node);
@@ -24,7 +29,7 @@ export class Transpile {
 
   constructor(private readonly AST: Node[]) { }
 
-  Transpile(): string {
+  transpile(): string {
     console.log("[!] Initialising transpilation...");
     console.dir(this.AST, { depth: null, colors: true });
 
@@ -49,7 +54,26 @@ export class Transpile {
       Stigma: Hey agent, give me a string WIT NOTHIN
       Agent: WIT NOTHIN????????
     */
-    return "";
+
+    return this.#finalElement;
+  }
+
+  createFile(directory: string, filename: string): void {
+    const projectPath = path.isAbsolute(directory)
+      ? directory
+      : path.resolve(process.cwd(), directory);
+
+    if (!fs.existsSync(projectPath)) {
+      fs.mkdirSync(projectPath, { recursive: true });
+      console.log(`[✓] Created new directory '${projectPath}'`);
+    }
+
+    const file = this.transpile();
+    const filePath = path.join(projectPath, filename);
+
+    fs.writeFileSync(filePath, file, "utf-8");
+
+    console.log(`[✓] Created transpiled at '${filePath}'`);
   }
 
   private parseElementNode(node: Node): string {
@@ -72,12 +96,14 @@ export class Transpile {
       .map((attribute) => {
         if (!attribute.value) return attribute.name;
 
-        if ((attribute.value as MonoVariableExpressionNode).type === "Expression") {
+        if (
+          (attribute.value as MonoVariableExpressionNode).type === "Expression"
+        ) {
           return `${attribute.name}="{${this.parseExpressionNode(attribute.value as Node)}}"`;
         }
 
         if (typeof attribute.value === "string") {
-          return `${attribute.name}="${attribute.value}"`;
+          return `${attribute.name}=${attribute.value}`;
         }
 
         console.warn(
@@ -89,13 +115,13 @@ export class Transpile {
   }
 
   private parseExpressionNode(node: Node): string {
-    const typed_node = node as MonoVariableExpressionNode;
-    return typed_node.code + "expr";
+    node = node as MonoVariableExpressionNode;
+    return "";
     // TODO: do this when you have actually integrated JavaScript / TypeScript
   }
 
   private parseTextNode(node: Node): string {
-    return (node as TextNode).value ?? " ";
+    return (node as TextNode).value ?? "";
   }
 
   private parseChildren(children: Node[]): string {

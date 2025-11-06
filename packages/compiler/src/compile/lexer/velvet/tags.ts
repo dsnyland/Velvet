@@ -90,13 +90,19 @@ export class Lexer {
   tokenise(): Token[] {
     const tokens: Token[] = [];
 
+    console.log(1);
+
     let token = this.nextToken();
     tokens.push(token);
+
+    console.log(2);
 
     while (token.kind !== TokenKind.EOF) {
       token = this.nextToken();
       tokens.push(token);
     }
+
+    console.log(3);
 
     return tokens;
   }
@@ -193,7 +199,7 @@ export class Lexer {
       return this.nextToken();
     }
 
-    // next identifier 
+    // next identifier
     if (this.isIdentifierStart(character)) {
       return this.getIdentifierToken();
     }
@@ -251,7 +257,7 @@ export class Lexer {
     const start = this.mark();
     const isValidStart = this.isValidExpressionSequence();
 
-    if(!isValidStart) {
+    if (!isValidStart) {
       return this.getTextToken();
     }
 
@@ -260,16 +266,16 @@ export class Lexer {
 
     while (!isClosed) {
       this.advance(1);
-      if(this.isEOF()) {
+      if (this.isEOF()) {
         throw new TokenisationError(
-          this.line, 
+          this.line,
           this.column,
           this.peek(0),
           [""],
           "Expected Closing Expression Statement",
           "Error Parsing Expression Node",
-          2
-        )
+          2,
+        );
       }
       isClosed = this.isValidExpressionSequence();
       javaScriptText += this.peek(0);
@@ -429,10 +435,10 @@ export class Lexer {
   private getNextNonEmptyCharacter(): string {
     let currentCharacter = this.peek(0);
     while (currentCharacter && /\s/.test(currentCharacter)) {
-      this.advance(1); 
-      currentCharacter = this.peek(0); 
+      this.advance(1);
+      currentCharacter = this.peek(0);
     }
-    
+
     return currentCharacter;
   }
 
