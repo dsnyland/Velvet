@@ -1,15 +1,23 @@
 const fs = require("fs");
 const path = require("path");
 
-const { Transpile } = require("../../packages/compiler/dist/cjs/compile/transpiler/velvet/tags.js");
-const { Lexer } = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/tags.js");
-const { TokenKind } = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/types.js");
-const { Parser } = require("../../packages/compiler/dist/cjs/compile/AST/velvet/parser.js");
+const {
+  Transpile,
+} = require("../../packages/compiler/dist/cjs/compile/transpiler/velvet/tags.js");
+const {
+  Lexer,
+} = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/tags.js");
+const {
+  TokenKind,
+} = require("../../packages/compiler/dist/cjs/compile/lexer/velvet/types.js");
+const {
+  Parser,
+} = require("../../packages/compiler/dist/cjs/compile/AST/velvet/parser.js");
 
 const TEST_DIR = path.join(__dirname, "velvet_test_files");
 const OUT_TEST_DIR = path.join(__dirname, "velvet_output_test_files");
 
-const files = fs.readdirSync(TEST_DIR).filter(f => f.endsWith(".velvet"));
+const files = fs.readdirSync(TEST_DIR).filter((f) => f.endsWith(".velvet"));
 
 for (const file of files) {
   const filePath = path.join(TEST_DIR, file);
@@ -20,16 +28,18 @@ for (const file of files) {
   // Step 1: Lexing
   console.log("TOKENS:");
   const lexer = new Lexer(source);
-  const tokens = lexer.tokenize();
+  const tokens = lexer.tokenise();
 
   for (const tok of tokens) {
     if ("value" in tok) {
       console.log(
         `${TokenKind[tok.kind]} (${tok.start.line}:${tok.start.column}) →`,
-        tok.value
+        tok.value,
       );
     } else {
-      console.log(`${TokenKind[tok.kind]} (${tok.start.line}:${tok.start.column})`);
+      console.log(
+        `${TokenKind[tok.kind]} (${tok.start.line}:${tok.start.column})`,
+      );
     }
   }
 
@@ -46,12 +56,11 @@ for (const file of files) {
   fs.writeFileSync(
     path.join(OUT_TEST_DIR, `AST_${file}.json`),
     JSON.stringify(ast, null, 2),
-    "utf-8"
+    "utf-8",
   );
 
   console.log("Transpiling");
   // now we transpile
-  const transpiler = new Transpile(ast);
-  const transpiled_ast = transpiler.Transpile();
-  console.dir(transpiled_ast, {depth: null, colors: true});
+  // now... WE FEAST!
+  new Transpile(ast).createFile("./velvet_output_test_files/", "test.html");
 }
