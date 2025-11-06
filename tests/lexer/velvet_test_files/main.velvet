@@ -1,5 +1,5 @@
 ---
-	/ it's own js
+	// it's own js
 
 	let asdf = 10;
 
@@ -11,6 +11,9 @@
 
 			let counter = 0; 
 		--- 
+		<div color={sup} color="wackawackaeyey" {counter} onclick={counter++}> 
+			Hello World
+		</div> 
 		<div {counter} onclick={counter++}> 
 			{counter} 
 		</div> 
@@ -19,7 +22,8 @@
 		--- 
 		// a third js
 
-		let counter = 0; 
+		counter = 10; 
+		console.log(counter);
 		--- 
 		<input title="Hello WOrld" />
 		<div onclick={counter++}> 

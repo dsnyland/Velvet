@@ -1,7 +1,7 @@
 [
   {
     "type": "EmbeddedExpression",
-    "code": "\t/ it's own js\n\n\tlet asdf = 10;\n\n\n"
+    "code": "\t// it's own js\n\n\tlet asdf = 10;\n\n\n"
   },
   {
     "type": "Element",
@@ -11,6 +11,44 @@
       {
         "type": "EmbeddedExpression",
         "code": "\n\t\t\t// another js\n\n\t\t\tlet counter = 0; \n\t\t "
+      },
+      {
+        "type": "Element",
+        "name": "div",
+        "attributes": [
+          {
+            "name": "color",
+            "value": {
+              "type": "Expression",
+              "code": "sup"
+            }
+          },
+          {
+            "name": "color",
+            "value": "\"wackawackaeyey\""
+          },
+          {
+            "name": "counter",
+            "value": {
+              "type": "Expression",
+              "code": "counter"
+            }
+          },
+          {
+            "name": "onclick",
+            "value": {
+              "type": "Expression",
+              "code": "counter++"
+            }
+          }
+        ],
+        "children": [
+          {
+            "type": "Text",
+            "value": " \n\t\t\tHello World\n\t\t"
+          }
+        ],
+        "selfClosing": false
       },
       {
         "type": "Element",
@@ -54,7 +92,7 @@
     "children": [
       {
         "type": "EmbeddedExpression",
-        "code": "\n\t\t// a third js\n\n\t\tlet counter = 0; \n\t\t "
+        "code": "\n\t\t// a third js\n\n\t\tcounter = 10; \n\t\tconsole.log(counter);\n\t\t "
       },
       {
         "type": "Element",

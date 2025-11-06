@@ -4,6 +4,7 @@ import path from "path";
 import {
   Attribute,
   ElementNode,
+  EmbeddedExpressionNode,
   MonoVariableExpressionNode,
   Node,
   TextNode,
@@ -11,6 +12,11 @@ import {
 
 export class Transpile {
   #finalElement: string = "";
+  // structure
+  // absPath, [file1, file2, file3]
+  #extractedImports: Record<string, string[]> = {};
+  #totalFileJS: string = "";
+  #scriptType = "text/javascript";
 
   private parseNode = (node: Node): string => {
     switch (node.type) {
@@ -20,6 +26,7 @@ export class Transpile {
         return this.parseTextNode(node);
       case "Expression":
       case "EmbeddedExpression":
+        return this.parseEmbeddedExpressionNode(node);
       case "MonoVariableExpression":
         return this.parseExpressionNode(node);
       case "Element":
@@ -29,7 +36,7 @@ export class Transpile {
 
   constructor(private readonly AST: Node[]) { }
 
-  transpile(): string {
+  transpile(scriptHash: string): string {
     console.log("[!] Initialising transpilation...");
     console.dir(this.AST, { depth: null, colors: true });
 
@@ -41,6 +48,15 @@ export class Transpile {
 
       this.#finalElement += elementTypeBeat;
     }
+
+    
+    // TODO: WHEN IMPLEMENTING THE BUNDLER THE ./bundle.js NEEDS TO HAVE A HASH FOR CACHE HIJACKING
+    this.#finalElement = `
+      <body>
+        ${this.#finalElement}
+        <script type="${this.#scriptType}" src="./bundle-${scriptHash}.js"></script>
+      </body>`;
+
 
     console.log("[✓] Transpiling complete", this.#finalElement);
 
@@ -68,12 +84,38 @@ export class Transpile {
       console.log(`[✓] Created new directory '${projectPath}'`);
     }
 
-    const file = this.transpile();
-    const filePath = path.join(projectPath, filename);
+    // IMPORTANT: when bundling make sure to use a hash for cachi hijcking :>
+    let scriptHash = "";
+    const file = this.transpile(scriptHash);
+    const filePath = path.join(projectPath, filename);  
+    const jsBundlePath = path.join(projectPath, `bundle-${scriptHash}.js`);
+    
+    const finalJS = this.mergeAndDeduplicateJS();
 
     fs.writeFileSync(filePath, file, "utf-8");
-
     console.log(`[✓] Created transpiled at '${filePath}'`);
+    fs.writeFileSync(jsBundlePath, finalJS, "utf-8");
+    console.log(`[✓] Created bundlePath at '${jsBundlePath}'`);
+
+  }
+
+  private mergeAndDeduplicateJS(): string {
+    const lines = this.#totalFileJS.split("\n");
+    const importSet = new Set<string>();
+    const codeLines: string[] = [];
+
+    for (let line of lines) {
+      line = line.trim();
+      if (/\b(import|require)\b/.test(line)) {
+        if (!importSet.has(line)) {
+          importSet.add(line);
+        }
+      } else {
+        codeLines.push(line);
+      }
+    }
+
+    return [...importSet, ...codeLines].join("\n");
   }
 
   private parseElementNode(node: Node): string {
@@ -82,7 +124,7 @@ export class Transpile {
 
     element += node.selfClosing
       ? `<${node.name} ${this.parseAttributes(node.attributes)} />`
-      : `<${node.name}>`;
+      : `<${node.name} ${this.parseAttributes(node.attributes)}>`;
 
     let val = this.parseChildren(node.children);
     element += val;
@@ -112,6 +154,31 @@ export class Transpile {
         return "";
       })
       .join(" ");
+  }
+
+  private parseEmbeddedExpressionNode(node: Node): string {
+    node = node as EmbeddedExpressionNode;
+    const externFileRequirementKeywords = ["require", "import"];
+    let finalVal = ""; 
+    let hasExternImports = externFileRequirementKeywords.some((k) => node.code.includes(k));
+    
+    const imports = this.extractImports(node.code);
+    if(imports.length > 0) {
+      this.#extractedImports = {
+        ...this.#extractedImports, 
+        "easter": imports,
+      };
+    }
+
+    //TODO: BUNDLER FOR ALL JS INTO ONE .bundle.js file
+    this.#scriptType = hasExternImports ? 'module' : 'text/javascript';
+    this.#totalFileJS += `\n${node.code}\n`;
+    return "";
+  }
+
+  private extractImports(code: string): string[] {
+    const matches = code.match(/\b(import\s+.+?\s+from\s+['"].+?['"]|\brequire\s*\(\s*['"].+?['"]\s*\))/g);
+    return matches || [];
   }
 
   private parseExpressionNode(node: Node): string {
