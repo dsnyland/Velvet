@@ -10,6 +10,8 @@ import {
   TextNode,
 } from "../../ast/velvet/types";
 
+import {fileHash} from '@velvet/utils';
+
 export class Transpile {
   #finalElement: string = "";
   // structure
@@ -17,6 +19,7 @@ export class Transpile {
   #extractedImports: Record<string, string[]> = {};
   #totalFileJS: string = "";
   #scriptType = "text/javascript";
+  private hash: fileHash | null = null;
 
   private parseNode = (node: Node): string => {
     switch (node.type) {
@@ -36,7 +39,7 @@ export class Transpile {
 
   constructor(private readonly AST: Node[]) { }
 
-  transpile(scriptHash: string): string {
+  transpile(): string {
     console.log("[!] Initialising transpilation...");
     console.dir(this.AST, { depth: null, colors: true });
 
@@ -48,17 +51,9 @@ export class Transpile {
 
       this.#finalElement += elementTypeBeat;
     }
-
     
-    // TODO: WHEN IMPLEMENTING THE BUNDLER THE ./bundle.js NEEDS TO HAVE A HASH FOR CACHE HIJACKING
-    this.#finalElement = `
-      <body>
-        ${this.#finalElement}
-        <script type="${this.#scriptType}" src="./bundle-${scriptHash}.js"></script>
-      </body>`;
-
-
-    console.log("[✓] Transpiling complete", this.#finalElement);
+    console.log("Hey Im hashing witrh the element");
+    console.log(this.#finalElement);
 
     /*
       Stigma: Hey agent! Give me a transpiled string
@@ -85,18 +80,30 @@ export class Transpile {
     }
 
     // IMPORTANT: when bundling make sure to use a hash for cachi hijcking :>
-    let scriptHash = "";
-    const file = this.transpile(scriptHash);
+    const file = this.transpile();
+    
     const filePath = path.join(projectPath, filename);  
-    const jsBundlePath = path.join(projectPath, `bundle-${scriptHash}.js`);
     
     const finalJS = this.mergeAndDeduplicateJS();
 
+    this.hash = new fileHash(this.#finalElement + " " + finalJS); 
+    const hashedValue = Buffer.from(this.hash.hash()).toString("hex"); 
+    const jsBundlePath = path.join(projectPath, `bundle-${hashedValue}.js`);
+
+    // TODO: WHEN IMPLEMENTING THE BUNDLER THE ./bundle.js NEEDS TO HAVE A HASH FOR CACHE HIJACKING
+    this.#finalElement = `
+      <body>
+        ${this.#finalElement}
+        <script type="${this.#scriptType}" src="./bundle-${hashedValue}.js"></script>
+      </body>`;
+
+
+    console.log("[✓] Transpiling complete", this.#finalElement);
     fs.writeFileSync(filePath, file, "utf-8");
     console.log(`[✓] Created transpiled at '${filePath}'`);
     fs.writeFileSync(jsBundlePath, finalJS, "utf-8");
     console.log(`[✓] Created bundlePath at '${jsBundlePath}'`);
-
+    
   }
 
   private mergeAndDeduplicateJS(): string {

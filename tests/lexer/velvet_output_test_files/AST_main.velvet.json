@@ -1,127 +1,174 @@
 [
   {
     "type": "EmbeddedExpression",
-    "code": "\t// it's own js\n\n\tlet asdf = 10;\n\n\n"
+    "code": "\t// it's own js\n\t/ my name is ther ass \n\tlet asdf = 10;\n\tlet asdf = 10;\n\tlet asdf = 10;\n\tlet asdf = 10;\n\n\n"
   },
   {
     "type": "Element",
-    "name": "Component",
+    "name": "div",
     "attributes": [],
     "children": [
       {
-        "type": "EmbeddedExpression",
-        "code": "\n\t\t\t// another js\n\n\t\t\tlet counter = 0; \n\t\t "
-      },
-      {
         "type": "Element",
         "name": "div",
-        "attributes": [
-          {
-            "name": "color",
-            "value": {
-              "type": "Expression",
-              "code": "sup"
-            }
-          },
-          {
-            "name": "color",
-            "value": "\"wackawackaeyey\""
-          },
-          {
-            "name": "counter",
-            "value": {
-              "type": "Expression",
-              "code": "counter"
-            }
-          },
-          {
-            "name": "onclick",
-            "value": {
-              "type": "Expression",
-              "code": "counter++"
-            }
-          }
-        ],
+        "attributes": [],
         "children": [
           {
-            "type": "Text",
-            "value": " \n\t\t\tHello World\n\t\t"
-          }
-        ],
-        "selfClosing": false
-      },
-      {
-        "type": "Element",
-        "name": "div",
-        "attributes": [
-          {
-            "name": "counter",
-            "value": {
-              "type": "Expression",
-              "code": "counter"
-            }
-          },
-          {
-            "name": "onclick",
-            "value": {
-              "type": "Expression",
-              "code": "counter++"
-            }
-          }
-        ],
-        "children": [
-          {
-            "type": "MonoVariableExpression",
-            "code": "counter"
-          }
-        ],
-        "selfClosing": false
-      }
-    ],
-    "selfClosing": false
-  },
-  {
-    "type": "Element",
-    "name": "Component2",
-    "attributes": [
-      {
-        "name": "default",
-        "value": true
-      }
-    ],
-    "children": [
-      {
-        "type": "EmbeddedExpression",
-        "code": "\n\t\t// a third js\n\n\t\tcounter = 10; \n\t\tconsole.log(counter);\n\t\t "
-      },
-      {
-        "type": "Element",
-        "name": "input",
-        "attributes": [
-          {
-            "name": "title",
-            "value": "\"Hello WOrld\""
-          }
-        ],
-        "children": [],
-        "selfClosing": true
-      },
-      {
-        "type": "Element",
-        "name": "div",
-        "attributes": [
-          {
-            "name": "onclick",
-            "value": {
-              "type": "Expression",
-              "code": "counter++"
-            }
-          }
-        ],
-        "children": [
-          {
-            "type": "MonoVariableExpression",
-            "code": "counter"
+            "type": "Element",
+            "name": "div",
+            "attributes": [],
+            "children": [
+              {
+                "type": "Element",
+                "name": "div",
+                "attributes": [],
+                "children": [
+                  {
+                    "type": "Element",
+                    "name": "div",
+                    "attributes": [],
+                    "children": [
+                      {
+                        "type": "Element",
+                        "name": "div",
+                        "attributes": [],
+                        "children": [],
+                        "selfClosing": false
+                      }
+                    ],
+                    "selfClosing": false
+                  },
+                  {
+                    "type": "Element",
+                    "name": "Component",
+                    "attributes": [],
+                    "children": [
+                      {
+                        "type": "EmbeddedExpression",
+                        "code": "\n\t\t\t// another js\n\n\t\t\tlet counter = 0; \n\t\t "
+                      },
+                      {
+                        "type": "Element",
+                        "name": "div",
+                        "attributes": [
+                          {
+                            "name": "color",
+                            "value": {
+                              "type": "Expression",
+                              "code": "sup"
+                            }
+                          },
+                          {
+                            "name": "color",
+                            "value": "\"wackawackaeyey\""
+                          },
+                          {
+                            "name": "counter",
+                            "value": {
+                              "type": "Expression",
+                              "code": "counter"
+                            }
+                          },
+                          {
+                            "name": "onclick",
+                            "value": {
+                              "type": "Expression",
+                              "code": "counter++"
+                            }
+                          }
+                        ],
+                        "children": [
+                          {
+                            "type": "Text",
+                            "value": " \n\t\t\tHello World\n\t\t"
+                          }
+                        ],
+                        "selfClosing": false
+                      },
+                      {
+                        "type": "Element",
+                        "name": "div",
+                        "attributes": [
+                          {
+                            "name": "counter",
+                            "value": {
+                              "type": "Expression",
+                              "code": "counter"
+                            }
+                          },
+                          {
+                            "name": "onclick",
+                            "value": {
+                              "type": "Expression",
+                              "code": "counter++"
+                            }
+                          }
+                        ],
+                        "children": [
+                          {
+                            "type": "MonoVariableExpression",
+                            "code": "counter"
+                          }
+                        ],
+                        "selfClosing": false
+                      }
+                    ],
+                    "selfClosing": false
+                  },
+                  {
+                    "type": "Element",
+                    "name": "Component2",
+                    "attributes": [
+                      {
+                        "name": "default",
+                        "value": true
+                      }
+                    ],
+                    "children": [
+                      {
+                        "type": "EmbeddedExpression",
+                        "code": "\n\t\t// a third js\n\n\t\tcounter = 10; \n\t\tconsole.log(counter);\n\t\t "
+                      },
+                      {
+                        "type": "Element",
+                        "name": "input",
+                        "attributes": [
+                          {
+                            "name": "title",
+                            "value": "\"Hello WOrld\""
+                          }
+                        ],
+                        "children": [],
+                        "selfClosing": true
+                      },
+                      {
+                        "type": "Element",
+                        "name": "div",
+                        "attributes": [
+                          {
+                            "name": "onclick",
+                            "value": {
+                              "type": "Expression",
+                              "code": "counter++"
+                            }
+                          }
+                        ],
+                        "children": [
+                          {
+                            "type": "MonoVariableExpression",
+                            "code": "counter"
+                          }
+                        ],
+                        "selfClosing": false
+                      }
+                    ],
+                    "selfClosing": false
+                  }
+                ],
+                "selfClosing": false
+              }
+            ],
+            "selfClosing": false
           }
         ],
         "selfClosing": false

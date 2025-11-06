@@ -1,6 +1,9 @@
 
 // it's own js
-
+/ my name is ther ass
+let asdf = 10;
+let asdf = 10;
+let asdf = 10;
 let asdf = 10;
 
 

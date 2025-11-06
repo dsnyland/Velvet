@@ -1,8 +1,6 @@
 ---
 	// it's own js
-
 	let asdf = 10;
-
 ---
 
 <Component> 
