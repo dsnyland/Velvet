@@ -20,6 +20,11 @@ export interface TextNode {
   value: string;
 }
 
+export interface GenericCSSNode {
+  type: string; // Text
+  value: string;
+}
+
 
 export interface MonoVariableExpressionNode {
   type: string; // Expression

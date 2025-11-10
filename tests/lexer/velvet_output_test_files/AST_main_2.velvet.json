@@ -1,0 +1,95 @@
+[
+  {
+    "type": "Element",
+    "name": "div",
+    "attributes": [
+      {
+        "name": "class",
+        "value": "\"hello class\""
+      },
+      {
+        "name": "id",
+        "value": "\"id\""
+      },
+      {
+        "name": "x",
+        "value": true
+      },
+      {
+        "name": "y",
+        "value": true
+      }
+    ],
+    "children": [
+      {
+        "type": "Text",
+        "value": " asdf "
+      }
+    ],
+    "selfClosing": false
+  },
+  {
+    "type": "Element",
+    "name": "style",
+    "attributes": [],
+    "children": [
+      {
+        "type": "CSSSelector",
+        "value": "[x]"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "width: 100px;\n  height: 100px;\n  background-color: white;"
+      },
+      {
+        "type": "CSSSelector",
+        "value": ".class"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "width: 100px;\n  height: 100px;\n  background-color: white;"
+      },
+      {
+        "type": "CSSSelector",
+        "value": ".hello"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "color: red;"
+      },
+      {
+        "type": "CSSSelector",
+        "value": ".class"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "text-transform: uppercase;"
+      },
+      {
+        "type": "CSSSelector",
+        "value": "#id"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "width: 100%; \n  text-align: center;"
+      },
+      {
+        "type": "CSSSelector",
+        "value": "div"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "width: 100px;\n  height: 100px;\n  background-color: white;"
+      },
+      {
+        "type": "CSSSelector",
+        "value": "[y]"
+      },
+      {
+        "type": "CSSDeclaration",
+        "value": "width: 100px;\n  height: 100px;\n  background-color: white;"
+      }
+    ],
+    "selfClosing": false
+  }
+]

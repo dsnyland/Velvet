@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
+import { UnknownTranspilerAttribute } from '@velvet/errors';
 
 import {
   Attribute,
   ElementNode,
   EmbeddedExpressionNode,
+  GenericCSSNode,
   MonoVariableExpressionNode,
   Node,
   TextNode,
@@ -34,10 +36,14 @@ export class Transpile {
         return this.parseExpressionNode(node);
       case "Element":
         return this.parseElementNode(node);
+      case "CSSDeclaration":
+        return this.parseCSSDeclarationNode(node)
+      case "CSSSelector":
+        return this.parseCSSSelectorNode(node)
     }
   };
 
-  constructor(private readonly AST: Node[]) { }
+  constructor(private readonly AST: Node[], private readonly filePath: string) { }
 
   transpile(): string {
     console.log("[!] Initialising transpilation...");
@@ -130,10 +136,10 @@ export class Transpile {
     let element = "";
 
     element += node.selfClosing
-      ? `<${node.name} ${this.parseAttributes(node.attributes)} />`
-      : `<${node.name} ${this.parseAttributes(node.attributes)}>`;
+      ? `<${node.name}${this.parseAttributes(node.attributes)} />`
+      : `<${node.name}${this.parseAttributes(node.attributes)}>`;
 
-    let val = this.parseChildren(node.children);
+    let val = this.parseChildren(node.children, node);
     element += val;
     element += node.selfClosing ? "" : `</ ${node.name}>`;
 
@@ -152,15 +158,16 @@ export class Transpile {
         }
 
         if (typeof attribute.value === "string") {
-          return `${attribute.name}=${attribute.value}`;
+          return ` ${attribute.name}=${attribute.value}`;
         }
 
-        console.warn(
-          `[✖] Format is incorrect for attribute '${attribute.name}'`,
-        );
-        return "";
+        if (typeof attribute.value === "boolean") {
+          return ` ${attribute.name}`;
+        }
+
+        throw UnknownTranspilerAttribute(attribute, [this.filePath]);
       })
-      .join(" ");
+      .join("");
   }
 
   private parseEmbeddedExpressionNode(node: Node): string {
@@ -198,12 +205,24 @@ export class Transpile {
     return (node as TextNode).value ?? "";
   }
 
-  private parseChildren(children: Node[]): string {
+  private parseChildren(children: Node[], parentNode: ElementNode): string {
     let val = "";
+
     for (let node of children) {
       console.log(">> Found child Node type of type " + node.type);
       val += this.parseNode(node);
     }
     return val;
   }
+  
+  private parseCSSDeclarationNode(node: Node): string {
+    node = node as GenericCSSNode; 
+    return "{" + node.value + "} \n";
+  }
+
+  private parseCSSSelectorNode(node: Node): string {
+    node = node as GenericCSSNode; 
+    return node.value;
+  }
+
 }

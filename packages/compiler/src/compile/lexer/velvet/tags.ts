@@ -2,6 +2,7 @@ import { TokenisationError } from "@velvet/errors";
 import {
   BaseToken,
   EmbeddedExprToken,
+  IdentifierToken,
   SimpleToken,
   SourcePos,
   StringToken,
@@ -18,6 +19,7 @@ export class Lexer {
   private seenTagName = false;
   private inExpression = false;
   private chileEscapeArray = ["<", "{", "}", "-"];
+  private lastIdentifier: Token | null = null; 
 
   private characterLookahead = (width: number, kind: TokenKind): BaseToken => {
     const start = this.mark();
@@ -128,7 +130,6 @@ export class Lexer {
       if (this.isIdentifierStart(character)) {
         // Changelog: Lex Luthor removed from the codebase
         const sukdik = this.getIdentifierToken();
-
         if (!this.seenTagName) {
           this.seenTagName = true;
           sukdik.kind = TokenKind.Identifier;
@@ -204,8 +205,10 @@ export class Lexer {
       return this.getIdentifierToken();
     }
 
-    return this.getTextToken();
+    return this.getTextToken(this.lastIdentifier?.value == "style");
   }
+
+   
 
   private getIdentifierToken(): Token {
     const start = this.mark();
@@ -224,12 +227,15 @@ export class Lexer {
       }
     }
 
-    return {
+    const token = {
       kind: TokenKind.Identifier,
       start,
       end: this.mark(),
       value,
-    };
+    }
+
+    this.lastIdentifier = token; 
+    return token;
   }
 
   private isValidExpressionSequence(): boolean {
@@ -322,6 +328,15 @@ export class Lexer {
         value: value.trim(),
       };
     }
+    
+    if(this.lastIdentifier?.value == "style") {
+      return {
+        kind: TokenKind.CSSDeclaration,
+        start,
+        end: this.mark(),
+        value: value.trim(),
+      };
+    }
 
     return {
       kind: TokenKind.JSExpression,
@@ -364,9 +379,10 @@ export class Lexer {
     };
   }
 
-  private getTextToken(): Token {
+  private getTextToken(isInCSStag = false): Token {
     const start = this.mark();
     let value = "";
+
     while (!this.isEOF()) {
       const character = this.peek(0);
       if (this.chileEscapeArray.includes(character)) break;
@@ -377,7 +393,15 @@ export class Lexer {
     if (!value.trim()) {
       return this.nextToken();
     }
-
+    
+    if(isInCSStag) {
+      return {
+        kind: TokenKind.CSSSelector,
+        start,
+        end: this.mark(),
+        value: value.trim(),
+      };
+    }
     return {
       kind: TokenKind.Text,
       start,

@@ -1,4 +1,5 @@
 import { Token, TokenKind } from "../../lexer/velvet/types";
+import { UnknownASTNodeError } from '@velvet/errors';
 import {
   Node,
   ElementNode,
@@ -7,11 +8,12 @@ import {
   AttributeValue,
   MonoVariableExpressionNode,
   EmbeddedExpressionNode,
+  GenericCSSNode,
 } from "./types";
 
 export class Parser {
   private currentPosition = 0;
-  constructor(private readonly tokens: Token[]) { }
+  constructor(private readonly tokens: Token[], private readonly filePath: string) { }
 
   private peek(delta = 0): Token {
     return this.tokens[this.currentPosition + delta];
@@ -38,8 +40,22 @@ export class Parser {
     if (token.kind === TokenKind.Text) return this.parseText();
     if (token.kind === TokenKind.JSExpression) return this.parseMonoVariableExpression();
     if (token.kind === TokenKind.JSEmbeddedExpr) return this.parseEmbeddedExpression();
+    if (token.kind === TokenKind.CSSSelector) return this.parseCSSSelectorNode();
+    if (token.kind === TokenKind.CSSDeclaration) return this.parseCSSDeclarationNode();
     this.consume();
-    return { type: "Text", value: "" };
+
+    throw UnknownASTNodeError(this.peek(), [this.filePath]);
+    // return { type: "Text", value: "" };
+  }
+
+  private parseCSSDeclarationNode(): GenericCSSNode {
+    const token = this.consume();
+    return { type: "CSSDeclaration", value: token.value ?? "" };
+  }
+
+  private parseCSSSelectorNode(): GenericCSSNode {
+    const token = this.consume();
+    return { type: "CSSSelector", value: token.value ?? "" };
   }
 
   private parseText(): TextNode {

@@ -1,0 +1,36 @@
+<div class="hello class" id="id" x y> asdf </div>
+<style>
+  [x] {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+
+ }
+ .class {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+ }
+ .hello {
+  color: red;
+ }
+ .class {
+  text-transform: uppercase;
+ }
+ #id {
+  width: 100%; 
+  text-align: center;
+ }
+ div {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+
+ }
+ [y] {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+
+ }
+</style>

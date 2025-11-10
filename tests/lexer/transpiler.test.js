@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
+const { cleanMatchingFiles } = require("../util/fileManagement/cleanup.js");
 const {
   Transpile,
 } = require("../../packages/compiler/dist/cjs/compile/transpiler/velvet/tags.js");
@@ -22,6 +23,10 @@ const files = fs.readdirSync(TEST_DIR).filter((f) => f.endsWith(".velvet"));
 for (const file of files) {
   const filePath = path.join(TEST_DIR, file);
   const source = fs.readFileSync(filePath, "utf-8");
+  const fileName = path.basename(file, ".velvet");
+ 
+  // first we need to cleanup 
+  cleanMatchingFiles(OUT_TEST_DIR, "bundle-*.js"); 
 
   console.log("\n=== FILE:", file, "===\n");
 
@@ -45,7 +50,7 @@ for (const file of files) {
 
   // Step 2: Parsing
   console.log("\nAST:");
-  const parser = new Parser(tokens);
+  const parser = new Parser(tokens, filePath);
   const ast = parser.parse();
 
   // Pretty-print AST
@@ -59,8 +64,11 @@ for (const file of files) {
     "utf-8",
   );
 
-  console.log("Transpiling");
+
   // now we transpile
   // now... WE FEAST!
-  new Transpile(ast).createFile("./velvet_output_test_files/", "test.html");
+  console.log("Transpiling");
+  new Transpile(ast, filePath).createFile(OUT_TEST_DIR, `${fileName}.html`);
+
+
 }

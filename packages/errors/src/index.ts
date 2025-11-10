@@ -3,6 +3,8 @@
 
 // tokenization
 export * from "./compiler/tokenization/index";
+export * from "./compiler/transpiler/index";
+export * from "./compiler/AST/index";
 
 
 // util

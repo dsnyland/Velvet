@@ -7,6 +7,8 @@ export enum TokenKind {
   Equals, // "="
   String, // "..." (double-quoted)
   Text, // raw text (between tags)
+  CSSSelector, // CSS selector 
+  CSSDeclaration, // CSS definitions inside Selector 
   BraceOpen, // "{"
   BraceClose, // "}"
   PropName, // "disabled"
